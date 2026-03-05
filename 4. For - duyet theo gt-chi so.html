@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duyệt List - 0984642505</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2E8B57;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .problem-section {
+            margin: 40px 0;
+            padding: 25px;
+            border: 3px solid #FFD700;
+            border-radius: 15px;
+            background: #FFFACD;
+        }
+        
+        .problem-title {
+            font-size: 1.8em;
+            color: #FF6347;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .code-display {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            color: #ECF0F1;
+            padding: 20px;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            margin: 15px 0;
+            border-left: 5px solid #3498DB;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .code-display .keyword {
+            color: #E74C3C;
+            font-weight: bold;
+        }
+        
+        .code-display .string {
+            color: #2ECC71;
+        }
+        
+        .code-display .number {
+            color: #F39C12;
+        }
+        
+        .code-display .variable {
+            color: #9B59B6;
+        }
+        
+        .code-display .operator {
+            color: #E67E22;
+        }
+        
+        .cars-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #F0F8FF;
+            border-radius: 15px;
+            border: 2px dashed #4169E1;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .car {
+            width: 80px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #333;
+        }
+        
+        .car:hover {
+            transform: scale(1.1);
+        }
+        
+        .car.blue { background: #4169E1; }
+        .car.red { background: #DC143C; }
+        .car.yellow { background: #FFD700; color: #333; text-shadow: none; }
+        .car.green { background: #32CD32; }
+        
+        .number {
+            width: 80px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #333;
+            font-size: 1.2em;
+        }
+        
+        .number:hover {
+            transform: scale(1.1);
+        }
+        
+        .number.even { background: #32CD32; }
+        .number.odd { background: #FF6347; }
+        
+        .car-index {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FF69B4;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .current-element {
+            box-shadow: 0 0 20px #FFD700;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px #FFD700; }
+            50% { box-shadow: 0 0 30px #FFD700, 0 0 40px #FFD700; }
+            100% { box-shadow: 0 0 20px #FFD700; }
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .counter {
+            font-size: 2em;
+            color: #FF6347;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #FFE4E1;
+            border-radius: 15px;
+            border: 3px solid #FF6347;
+        }
+        
+        .explanation {
+            background: #E6F3FF;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #0066CC;
+            margin: 20px 0;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .variable-display {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .variable {
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #8B4513;
+        }
+        
+        .child-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            height: 60px;
+            position: relative;
+        }
+        
+        .child {
+            font-size: 2.5em;
+            position: absolute;
+            transition: all 0.8s ease;
+            z-index: 10;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+            top: -10px;
+            transform: scaleX(-1);
+        }
+        
+        .input-section {
+            background: #F0F8FF;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #4169E1;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Học duyệt List: cùng thầy Hiếu!!! 🚗</h1>
+        
+        <!-- Bài toán 1 -->
+        <div class="problem-section">
+            <div class="problem-title">Bài toán 1: Duyệt theo phần tử (for x in a:)</div>
+            
+            <div class="code-display">
+a = ['xanh', 'đỏ', 'vàng', 'xanh', 'xanh', 'đỏ']<br>
+n = len(a)  # n = 6<br>
+dem = 0<br>
+for x in a:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if x == 'xanh':<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dem = dem + 1
+            </div>
+            
+            <div class="explanation">
+                <strong>Giải thích:</strong> Trong cách này, chúng ta duyệt trực tiếp qua từng phần tử trong list. 
+                Biến <code>x</code> sẽ lần lượt nhận giá trị của từng xe trong dãy.
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                <div style="font-size: 1.5em; font-weight: bold; color: #2E8B57; margin-right: 20px;">
+                    List a = 
+                </div>
+                <div class="cars-container" id="cars1">
+                    <!-- Xe sẽ được tạo bằng JavaScript -->
+                </div>
+            </div>
+            
+            <div class="child-container" id="child1">
+                <div class="child" id="child1-runner">🏃‍♂️</div>
+            </div>
+            
+            <div class="variable-display">
+                <div class="variable">x = <span id="current-x">chưa bắt đầu</span></div>
+                <div class="variable">dem = <span id="count1">0</span></div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" onclick="startDemo1()">▶️ Duyệt tự động</button>
+                <button class="btn" onclick="stepDemo1()">👣 Duyệt từng bước</button>
+                <button class="btn" onclick="resetDemo1()">🔄 Reset</button>
+            </div>
+        </div>
+        
+        <!-- Bài toán 1B -->
+        <div class="problem-section">
+            <div class="problem-title">Bài toán 1B: Đếm số chẵn trong dãy số (for x in a:)</div>
+            
+            <div class="code-display">
+a = [12, 7, 8, 15, 20, 3]<br>
+n = len(a)  # n = 6<br>
+dem = 0<br>
+for x in a:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if x % 2 == 0:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dem = dem + 1
+            </div>
+            
+            <div class="explanation">
+                <strong>Giải thích:</strong> Trong bài này, chúng ta duyệt qua từng số trong dãy. 
+                Biến <code>x</code> sẽ lần lượt nhận giá trị của từng số. Số chẵn là số chia hết cho 2 (x % 2 == 0).
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                <div style="font-size: 1.5em; font-weight: bold; color: #2E8B57; margin-right: 20px;">
+                    List a = 
+                </div>
+                <div class="cars-container" id="numbers1B">
+                    <!-- Số sẽ được tạo bằng JavaScript -->
+                </div>
+            </div>
+            
+            <div class="child-container" id="child1B">
+                <div class="child" id="child1B-runner">🏃‍♂️</div>
+            </div>
+            
+            <div class="variable-display">
+                <div class="variable">x = <span id="current-x1B">chưa bắt đầu</span></div>
+                <div class="variable">dem = <span id="count1B">0</span></div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" onclick="startDemo1B()">▶️ Duyệt tự động</button>
+                <button class="btn" onclick="stepDemo1B()">👣 Duyệt từng bước</button>
+                <button class="btn" onclick="resetDemo1B()">🔄 Reset</button>
+            </div>
+        </div>
+        
+        <!-- Bài toán 2 -->
+        <div class="problem-section">
+            <div class="problem-title">Bài toán 2: Tìm vị trí xe vàng đầu tiên (for i in range(n):)</div>
+            
+            <div class="code-display">
+a = ['đỏ', 'đỏ', 'vàng', 'xanh', 'xanh', 'đỏ']<br>
+n = len(a)  # n = 6<br>
+for i in range(n):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if a[i] == 'vàng':<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(i)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break
+            </div>
+            
+            <div class="explanation">
+                <strong>Giải thích:</strong> Trong bài này, chúng ta duyệt qua các chỉ số để tìm xe vàng đầu tiên. 
+                Khi tìm thấy xe vàng đầu tiên, chúng ta in ra vị trí của nó và dừng lại bằng lệnh <code>break</code>.
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                <div style="font-size: 1.5em; font-weight: bold; color: #2E8B57; margin-right: 20px;">
+                    List a = 
+                </div>
+                <div class="cars-container" id="cars2">
+                    <!-- Xe sẽ được tạo bằng JavaScript -->
+                </div>
+            </div>
+            
+            <div class="child-container" id="child2">
+                <div class="child" id="child2-runner">🏃‍♂️</div>
+            </div>
+            
+            <div class="variable-display">
+                <div class="variable">i = <span id="current-i">chưa bắt đầu</span></div>
+                <div class="variable">a[i] = <span id="current-ai">chưa bắt đầu</span></div>
+                <div class="variable">Kết quả = <span id="result2">chưa tìm thấy</span></div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" onclick="startDemo2()">▶️ Duyệt tự động</button>
+                <button class="btn" onclick="stepDemo2()">👣 Duyệt từng bước</button>
+                <button class="btn" onclick="resetDemo2()">🔄 Reset</button>
+            </div>
+        </div>
+        
+        <!-- Bài toán 2B -->
+        <div class="problem-section">
+            <div class="problem-title">Bài toán 2B: Tìm vị trí số chẵn đầu tiên (for i in range(n):)</div>
+            
+            <div class="code-display">
+a = [1, 3, 5, 6, 7, 8]<br>
+n = len(a)  # n = 6<br>
+for i in range(n):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if a[i] % 2 == 0:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(i)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break
+            </div>
+            
+            <div class="explanation">
+                <strong>Giải thích:</strong> Trong bài này, chúng ta duyệt qua các chỉ số để tìm số chẵn đầu tiên. 
+                Khi tìm thấy số chẵn đầu tiên, chúng ta in ra vị trí của nó và dừng lại bằng lệnh <code>break</code>.
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                <div style="font-size: 1.5em; font-weight: bold; color: #2E8B57; margin-right: 20px;">
+                    List a = 
+                </div>
+                <div class="cars-container" id="numbers2B">
+                    <!-- Số sẽ được tạo bằng JavaScript -->
+                </div>
+            </div>
+            
+            <div class="child-container" id="child2B">
+                <div class="child" id="child2B-runner">🏃‍♂️</div>
+            </div>
+            
+            <div class="variable-display">
+                <div class="variable">i = <span id="current-i2B">chưa bắt đầu</span></div>
+                <div class="variable">a[i] = <span id="current-ai2B">chưa bắt đầu</span></div>
+                <div class="variable">Kết quả = <span id="result2B">chưa tìm thấy</span></div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" onclick="startDemo2B()">▶️ Duyệt tự động</button>
+                <button class="btn" onclick="stepDemo2B()">👣 Duyệt từng bước</button>
+                <button class="btn" onclick="resetDemo2B()">🔄 Reset</button>
+            </div>
+        </div>
+        
+        <div class="input-section">
+            <h2 style="text-align: center; color: #2E8B57;">🎮 Tùy chỉnh số lượng xe</h2>
+            <div class="controls">
+                <label for="car-count" style="font-size: 1.2em; font-weight: bold; color: #333;">Số lượng xe (3-10): </label>
+                <input type="number" id="car-count" min="3" max="10" value="6" style="padding: 10px; font-size: 1.1em; border: 2px solid #4ECDC4; border-radius: 10px; margin: 0 10px;">
+                <button class="btn" onclick="updateCars()">🔄 Cập nhật xe</button>
+            </div>
+        </div>
+        
+        <div class="counter" id="final-result" style="display: none;">
+            🎉 Kết quả: Có <span id="final-count"></span> chiếc xe màu xanh! 🎉
+        </div>
+    </div>
+
+    <script>
+        let cars = ['đỏ', 'đỏ', 'vàng', 'xanh', 'xanh', 'đỏ'];
+        const carColors = {
+            'xanh': 'blue',
+            'đỏ': 'red', 
+            'vàng': 'yellow',
+            'xanh lá': 'green'
+        };
+        const availableColors = ['xanh', 'đỏ', 'vàng', 'xanh lá'];
+        
+        let numbers = [12, 7, 8, 15, 20, 3];
+        let numbers2B = [1, 3, 5, 6, 7, 8];
+        
+        let demo1Active = false;
+        let demo1BActive = false;
+        let demo2Active = false;
+        let demo2BActive = false;
+        let demo1Step = 0;
+        let demo1BStep = 0;
+        let demo2Step = 0;
+        let demo2BStep = 0;
+        let demo1Count = 0;
+        let demo1BCount = 0;
+        let demo2Count = 0;
+        let demo2Result = -1;
+        let demo2BResult = -1;
+        
+        function createCars(containerId, showIndex = false) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            cars.forEach((car, index) => {
+                const carDiv = document.createElement('div');
+                carDiv.className = `car ${carColors[car]}`;
+                carDiv.innerHTML = `🚗<br>${car}`;
+                carDiv.id = `${containerId}-car-${index}`;
+                
+                if (showIndex) {
+                    const indexDiv = document.createElement('div');
+                    indexDiv.className = 'car-index';
+                    indexDiv.textContent = `i=${index}`;
+                    carDiv.appendChild(indexDiv);
+                }
+                
+                container.appendChild(carDiv);
+            });
+        }
+        
+        function createNumbers(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            numbers.forEach((num, index) => {
+                const numDiv = document.createElement('div');
+                numDiv.className = `number ${num % 2 === 0 ? 'even' : 'odd'}`;
+                numDiv.innerHTML = `${num}<br>${num % 2 === 0 ? 'chẵn' : 'lẻ'}`;
+                numDiv.id = `${containerId}-num-${index}`;
+                
+                container.appendChild(numDiv);
+            });
+        }
+        
+        function createNumbers2B(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            numbers2B.forEach((num, index) => {
+                const numDiv = document.createElement('div');
+                numDiv.className = `number ${num % 2 === 0 ? 'even' : 'odd'}`;
+                numDiv.innerHTML = `${num}<br>${num % 2 === 0 ? 'chẵn' : 'lẻ'}`;
+                numDiv.id = `${containerId}-num-${index}`;
+                
+                const indexDiv = document.createElement('div');
+                indexDiv.className = 'car-index';
+                indexDiv.textContent = `i=${index}`;
+                numDiv.appendChild(indexDiv);
+                
+                container.appendChild(numDiv);
+            });
+        }
+        
+        function moveChild(childId, itemIndex) {
+            const child = document.getElementById(childId);
+            let targetElement, itemContainer, childContainer;
+            
+            if (childId.includes('2B')) {
+                itemContainer = document.getElementById('numbers2B');
+                targetElement = document.getElementById(`numbers2B-num-${itemIndex}`);
+                childContainer = document.getElementById('child2B');
+            } else if (childId.includes('1B')) {
+                itemContainer = document.getElementById('numbers1B');
+                targetElement = document.getElementById(`numbers1B-num-${itemIndex}`);
+                childContainer = document.getElementById('child1B');
+            } else if (childId.includes('1')) {
+                itemContainer = document.getElementById('cars1');
+                targetElement = document.getElementById(`cars1-car-${itemIndex}`);
+                childContainer = document.getElementById('child1');
+            } else {
+                itemContainer = document.getElementById('cars2');
+                targetElement = document.getElementById(`cars2-car-${itemIndex}`);
+                childContainer = document.getElementById('child2');
+            }
+            
+            if (targetElement) {
+                const itemRect = targetElement.getBoundingClientRect();
+                const childContainerRect = childContainer.getBoundingClientRect();
+                
+                // Tính toán vị trí chính xác của phần tử so với container của em bé
+                const relativeLeft = itemRect.left - childContainerRect.left + (itemRect.width / 2) - 25;
+                child.style.left = `${relativeLeft}px`;
+            }
+        }
+        
+        function stepDemo1B() {
+            if (demo1BStep >= numbers.length) {
+                document.getElementById('final-result').style.display = 'block';
+                document.getElementById('final-count').textContent = demo1BCount;
+                return;
+            }
+            
+            // Xóa highlight cũ
+            document.querySelectorAll('#numbers1B .number').forEach(num => {
+                num.classList.remove('current-element');
+            });
+            
+            // Highlight số hiện tại
+            const currentNum = document.getElementById(`numbers1B-num-${demo1BStep}`);
+            currentNum.classList.add('current-element');
+            
+            // Di chuyển em bé
+            moveChild('child1B-runner', demo1BStep);
+            
+            // Cập nhật biến
+            const currentNumber = numbers[demo1BStep];
+            document.getElementById('current-x1B').textContent = currentNumber;
+            
+            if (currentNumber % 2 === 0) {
+                demo1BCount++;
+            }
+            
+            document.getElementById('count1B').textContent = demo1BCount;
+            demo1BStep++;
+        }
+        
+        function startDemo1B() {
+            if (demo1BActive) return;
+            demo1BActive = true;
+            resetDemo1B();
+            
+            let count = 0;
+            let index = 0;
+            
+            const interval = setInterval(() => {
+                if (index >= numbers.length) {
+                    clearInterval(interval);
+                    demo1BActive = false;
+                    document.getElementById('final-result').style.display = 'block';
+                    document.getElementById('final-count').textContent = count;
+                    return;
+                }
+                
+                // Xóa highlight cũ
+                document.querySelectorAll('#numbers1B .number').forEach(num => {
+                    num.classList.remove('current-element');
+                });
+                
+                // Highlight số hiện tại
+                const currentNum = document.getElementById(`numbers1B-num-${index}`);
+                currentNum.classList.add('current-element');
+                
+                // Di chuyển em bé
+                moveChild('child1B-runner', index);
+                
+                // Cập nhật biến
+                const currentNumber = numbers[index];
+                document.getElementById('current-x1B').textContent = currentNumber;
+                
+                if (currentNumber % 2 === 0) {
+                    count++;
+                }
+                
+                document.getElementById('count1B').textContent = count;
+                
+                index++;
+            }, 1500);
+        }
+        
+        function resetDemo1B() {
+            demo1BActive = false;
+            demo1BStep = 0;
+            demo1BCount = 0;
+            document.getElementById('current-x1B').textContent = 'chưa bắt đầu';
+            document.getElementById('count1B').textContent = '0';
+            document.getElementById('final-result').style.display = 'none';
+            
+            document.querySelectorAll('#numbers1B .number').forEach(num => {
+                num.classList.remove('current-element');
+            });
+            
+            // Reset vị trí em bé về trước số đầu tiên
+            const child = document.getElementById('child1B-runner');
+            const firstNum = document.getElementById('numbers1B-num-0');
+            if (firstNum) {
+                const numContainer = document.getElementById('numbers1B');
+                const numRect = firstNum.getBoundingClientRect();
+                const childContainer = document.getElementById('child1B');
+                const childContainerRect = childContainer.getBoundingClientRect();
+                const relativeLeft = numRect.left - childContainerRect.left - 60;
+                child.style.left = `${relativeLeft}px`;
+            } else {
+                child.style.left = '-60px';
+            }
+        }
+        
+        function stepDemo1() {
+            if (demo1Step >= cars.length) {
+                document.getElementById('final-result').style.display = 'block';
+                document.getElementById('final-count').textContent = demo1Count;
+                return;
+            }
+            
+            // Xóa highlight cũ
+            document.querySelectorAll('#cars1 .car').forEach(car => {
+                car.classList.remove('current-element');
+            });
+            
+            // Highlight xe hiện tại
+            const currentCar = document.getElementById(`cars1-car-${demo1Step}`);
+            currentCar.classList.add('current-element');
+            
+            // Di chuyển em bé
+            moveChild('child1-runner', demo1Step);
+            
+            // Cập nhật biến
+            const currentColor = cars[demo1Step];
+            document.getElementById('current-x').textContent = currentColor;
+            
+            if (currentColor === 'xanh') {
+                demo1Count++;
+            }
+            
+            document.getElementById('count1').textContent = demo1Count;
+            demo1Step++;
+        }
+        
+        function startDemo1() {
+            if (demo1Active) return;
+            demo1Active = true;
+            resetDemo1();
+            
+            let count = 0;
+            let index = 0;
+            
+            const interval = setInterval(() => {
+                if (index >= cars.length) {
+                    clearInterval(interval);
+                    demo1Active = false;
+                    document.getElementById('final-result').style.display = 'block';
+                    document.getElementById('final-count').textContent = count;
+                    return;
+                }
+                
+                // Xóa highlight cũ
+                document.querySelectorAll('#cars1 .car').forEach(car => {
+                    car.classList.remove('current-element');
+                });
+                
+                // Highlight xe hiện tại
+                const currentCar = document.getElementById(`cars1-car-${index}`);
+                currentCar.classList.add('current-element');
+                
+                // Di chuyển em bé
+                moveChild('child1-runner', index);
+                
+                // Cập nhật biến
+                const currentColor = cars[index];
+                document.getElementById('current-x').textContent = currentColor;
+                
+                if (currentColor === 'xanh') {
+                    count++;
+                }
+                
+                document.getElementById('count1').textContent = count;
+                
+                index++;
+            }, 1500);
+        }
+        
+        function stepDemo2() {
+            if (demo2Step >= cars.length || demo2Result !== -1) {
+                return;
+            }
+            
+            // Xóa highlight cũ
+            document.querySelectorAll('#cars2 .car').forEach(car => {
+                car.classList.remove('current-element');
+            });
+            
+            // Highlight xe hiện tại
+            const currentCar = document.getElementById(`cars2-car-${demo2Step}`);
+            currentCar.classList.add('current-element');
+            
+            // Di chuyển em bé
+            moveChild('child2-runner', demo2Step);
+            
+            // Cập nhật biến
+            document.getElementById('current-i').textContent = demo2Step;
+            const currentColor = cars[demo2Step];
+            document.getElementById('current-ai').textContent = currentColor;
+            
+            if (currentColor === 'vàng') {
+                demo2Result = demo2Step;
+                document.getElementById('result2').textContent = `Tìm thấy tại vị trí ${demo2Step}`;
+                document.getElementById('result2').style.color = '#32CD32';
+                return;
+            }
+            
+            demo2Step++;
+        }
+        
+        function startDemo2() {
+            if (demo2Active) return;
+            demo2Active = true;
+            resetDemo2();
+            
+            let index = 0;
+            
+            const interval = setInterval(() => {
+                if (index >= cars.length || demo2Result !== -1) {
+                    clearInterval(interval);
+                    demo2Active = false;
+                    return;
+                }
+                
+                // Xóa highlight cũ
+                document.querySelectorAll('#cars2 .car').forEach(car => {
+                    car.classList.remove('current-element');
+                });
+                
+                // Highlight xe hiện tại
+                const currentCar = document.getElementById(`cars2-car-${index}`);
+                currentCar.classList.add('current-element');
+                
+                // Di chuyển em bé
+                moveChild('child2-runner', index);
+                
+                // Cập nhật biến
+                document.getElementById('current-i').textContent = index;
+                const currentColor = cars[index];
+                document.getElementById('current-ai').textContent = currentColor;
+                
+                if (currentColor === 'vàng') {
+                    demo2Result = index;
+                    document.getElementById('result2').textContent = `Tìm thấy tại vị trí ${index}`;
+                    document.getElementById('result2').style.color = '#32CD32';
+                    clearInterval(interval);
+                    demo2Active = false;
+                    return;
+                }
+                
+                index++;
+            }, 1500);
+        }
+        
+        function resetDemo1() {
+            demo1Active = false;
+            demo1Step = 0;
+            demo1Count = 0;
+            document.getElementById('current-x').textContent = 'chưa bắt đầu';
+            document.getElementById('count1').textContent = '0';
+            document.getElementById('final-result').style.display = 'none';
+            
+            document.querySelectorAll('#cars1 .car').forEach(car => {
+                car.classList.remove('current-element');
+            });
+            
+            // Reset vị trí em bé về trước xe đầu tiên
+            const child = document.getElementById('child1-runner');
+            const firstCar = document.getElementById('cars1-car-0');
+            if (firstCar) {
+                const carContainer = document.getElementById('cars1');
+                const carRect = firstCar.getBoundingClientRect();
+                const childContainer = document.getElementById('child1');
+                const childContainerRect = childContainer.getBoundingClientRect();
+                const relativeLeft = carRect.left - childContainerRect.left - 60;
+                child.style.left = `${relativeLeft}px`;
+            } else {
+                child.style.left = '-60px';
+            }
+        }
+        
+        function resetDemo2() {
+            demo2Active = false;
+            demo2Step = 0;
+            demo2Result = -1;
+            document.getElementById('current-i').textContent = 'chưa bắt đầu';
+            document.getElementById('current-ai').textContent = 'chưa bắt đầu';
+            document.getElementById('result2').textContent = 'chưa tìm thấy';
+            document.getElementById('result2').style.color = '#8B4513';
+            document.getElementById('final-result').style.display = 'none';
+            
+            document.querySelectorAll('#cars2 .car').forEach(car => {
+                car.classList.remove('current-element');
+            });
+            
+            // Reset vị trí em bé về trước xe đầu tiên
+            const child = document.getElementById('child2-runner');
+            const firstCar = document.getElementById('cars2-car-0');
+            if (firstCar) {
+                const carContainer = document.getElementById('cars2');
+                const carRect = firstCar.getBoundingClientRect();
+                const childContainer = document.getElementById('child2');
+                const childContainerRect = childContainer.getBoundingClientRect();
+                const relativeLeft = carRect.left - childContainerRect.left - 60;
+                child.style.left = `${relativeLeft}px`;
+            } else {
+                child.style.left = '-60px';
+            }
+        }
+        
+        function stepDemo2B() {
+            if (demo2BStep >= numbers2B.length || demo2BResult !== -1) {
+                return;
+            }
+            
+            // Xóa highlight cũ
+            document.querySelectorAll('#numbers2B .number').forEach(num => {
+                num.classList.remove('current-element');
+            });
+            
+            // Highlight số hiện tại
+            const currentNum = document.getElementById(`numbers2B-num-${demo2BStep}`);
+            currentNum.classList.add('current-element');
+            
+            // Di chuyển em bé
+            moveChild('child2B-runner', demo2BStep);
+            
+            // Cập nhật biến
+            document.getElementById('current-i2B').textContent = demo2BStep;
+            const currentNumber = numbers2B[demo2BStep];
+            document.getElementById('current-ai2B').textContent = currentNumber;
+            
+            if (currentNumber % 2 === 0) {
+                demo2BResult = demo2BStep;
+                document.getElementById('result2B').textContent = `Tìm thấy tại vị trí ${demo2BStep}`;
+                document.getElementById('result2B').style.color = '#32CD32';
+                return;
+            }
+            
+            demo2BStep++;
+        }
+        
+        function startDemo2B() {
+            if (demo2BActive) return;
+            demo2BActive = true;
+            resetDemo2B();
+            
+            let index = 0;
+            
+            const interval = setInterval(() => {
+                if (index >= numbers2B.length || demo2BResult !== -1) {
+                    clearInterval(interval);
+                    demo2BActive = false;
+                    return;
+                }
+                
+                // Xóa highlight cũ
+                document.querySelectorAll('#numbers2B .number').forEach(num => {
+                    num.classList.remove('current-element');
+                });
+                
+                // Highlight số hiện tại
+                const currentNum = document.getElementById(`numbers2B-num-${index}`);
+                currentNum.classList.add('current-element');
+                
+                // Di chuyển em bé
+                moveChild('child2B-runner', index);
+                
+                // Cập nhật biến
+                document.getElementById('current-i2B').textContent = index;
+                const currentNumber = numbers2B[index];
+                document.getElementById('current-ai2B').textContent = currentNumber;
+                
+                if (currentNumber % 2 === 0) {
+                    demo2BResult = index;
+                    document.getElementById('result2B').textContent = `Tìm thấy tại vị trí ${index}`;
+                    document.getElementById('result2B').style.color = '#32CD32';
+                    clearInterval(interval);
+                    demo2BActive = false;
+                    return;
+                }
+                
+                index++;
+            }, 1500);
+        }
+        
+        function resetDemo2B() {
+            demo2BActive = false;
+            demo2BStep = 0;
+            demo2BResult = -1;
+            document.getElementById('current-i2B').textContent = 'chưa bắt đầu';
+            document.getElementById('current-ai2B').textContent = 'chưa bắt đầu';
+            document.getElementById('result2B').textContent = 'chưa tìm thấy';
+            document.getElementById('result2B').style.color = '#8B4513';
+            
+            document.querySelectorAll('#numbers2B .number').forEach(num => {
+                num.classList.remove('current-element');
+            });
+            
+            // Reset vị trí em bé về trước số đầu tiên
+            const child = document.getElementById('child2B-runner');
+            const firstNum = document.getElementById('numbers2B-num-0');
+            if (firstNum) {
+                const numContainer = document.getElementById('numbers2B');
+                const numRect = firstNum.getBoundingClientRect();
+                const childContainer = document.getElementById('child2B');
+                const childContainerRect = childContainer.getBoundingClientRect();
+                const relativeLeft = numRect.left - childContainerRect.left - 60;
+                child.style.left = `${relativeLeft}px`;
+            } else {
+                child.style.left = '-60px';
+            }
+        }
+        
+        function updateCars() {
+            const count = parseInt(document.getElementById('car-count').value);
+            if (count < 3 || count > 10) {
+                alert('Số lượng xe phải từ 3 đến 10!');
+                return;
+            }
+            
+            // Tạo mảng xe mới ngẫu nhiên
+            cars = [];
+            for (let i = 0; i < count; i++) {
+                const randomColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+                cars.push(randomColor);
+            }
+            
+            // Cập nhật hiển thị
+            createCars('cars1', false);
+            createCars('cars2', true);
+            
+            // Reset các demo
+            resetDemo1();
+            resetDemo2();
+        }
+        
+        // Khởi tạo
+        createCars('cars1', false);
+        createNumbers('numbers1B');
+        createCars('cars2', true);
+        createNumbers2B('numbers2B');
+        
+        // Khởi tạo vị trí em bé
+        setTimeout(() => {
+            resetDemo1();
+            resetDemo1B();
+            resetDemo2();
+            resetDemo2B();
+        }, 100);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9770d144158f5f5a',t:'MTc1NjUyMDUxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

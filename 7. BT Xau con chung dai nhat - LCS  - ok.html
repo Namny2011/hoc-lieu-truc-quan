@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="vi" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minh họa thuật toán LCS</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600&amp;family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Roboto', sans-serif; }
+    .code-block { font-family: 'Roboto Mono', monospace; }
+    .tab-btn { transition: all 0.3s ease; }
+    .tab-btn.active { 
+      background: linear-gradient(135deg, #1e40af, #3b82f6);
+      color: white;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+    .cell {
+      transition: all 0.4s ease;
+    }
+    .cell.highlight {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+    }
+    .cell.traced {
+      background: linear-gradient(135deg, #34d399, #10b981) !important;
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.5);
+    }
+    .cell.path {
+      background: linear-gradient(135deg, #f472b6, #ec4899) !important;
+      color: white;
+    }
+    .formula-box {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border-left: 4px solid #0284c7;
+    }
+    .result-char {
+      animation: popIn 0.4s ease;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+    }
+    .pulse-animation {
+      animation: pulse 1.5s infinite;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-gradient-to-br from-blue-50 via-cyan-50 to-blue-100">
+  <div class="h-full overflow-auto p-4">
+   <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <header class="text-center mb-6">
+     <h1 id="main-title" class="text-2xl md:text-3xl font-bold text-blue-900 mb-2" style="font-size: 24px;">🧬 Xâu Con Chung Dài Nhất (LCS)</h1>
+     <p class="text-blue-700" style="font-size: 18px;">Longest Common Subsequence - Dynamic Programming</p>
+    </header><!-- Tabs -->
+    <div class="flex flex-wrap justify-center gap-2 mb-6">
+     <button class="tab-btn active px-4 py-2 rounded-lg font-semibold text-blue-800 bg-blue-100 hover:bg-blue-200" style="font-size: 18px;" data-tab="problem" onclick="showTab('problem')"> 📋 Đề bài </button> <button class="tab-btn px-4 py-2 rounded-lg font-semibold text-blue-800 bg-blue-100 hover:bg-blue-200" style="font-size: 18px;" data-tab="algorithm" onclick="showTab('algorithm')"> 💡 Ý tưởng giải thuật </button> <button class="tab-btn px-4 py-2 rounded-lg font-semibold text-blue-800 bg-blue-100 hover:bg-blue-200" style="font-size: 18px;" data-tab="visualization" onclick="showTab('visualization')"> 🎯 Minh họa trực quan </button> <button class="tab-btn px-4 py-2 rounded-lg font-semibold text-blue-800 bg-blue-100 hover:bg-blue-200" style="font-size: 18px;" data-tab="code" onclick="showTab('code')"> 💻 Code hoàn chỉnh </button>
+    </div><!-- Tab Contents -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 min-h-96">
+     <!-- Tab 1: Đề bài -->
+     <div id="tab-problem" class="tab-content">
+      <h2 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2" style="font-size: 22px;"><span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">01</span> Phát biểu bài toán</h2>
+      <div class="space-y-4" style="font-size: 20px; color: #1e3a5f;">
+       <div class="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-500">
+        <p class="font-semibold text-blue-900 mb-2">📌 Đầu vào:</p>
+        <ul class="list-disc ml-6 space-y-1">
+         <li>Xâu X có độ dài m: <span class="font-mono bg-yellow-100 px-2 py-1 rounded text-blue-800">X = "VANTRUNG"</span></li>
+         <li>Xâu Y có độ dài n: <span class="font-mono bg-yellow-100 px-2 py-1 rounded text-blue-800">Y = "HOANGTRONG"</span></li>
+        </ul>
+       </div>
+       <div class="bg-green-50 p-4 rounded-xl border-l-4 border-green-500">
+        <p class="font-semibold text-green-900 mb-2">📌 Đầu ra:</p>
+        <ul class="list-disc ml-6 space-y-1">
+         <li>Xâu con chung dài nhất của X và Y</li>
+         <li>Vị trí các ký tự được chọn trong X và Y</li>
+        </ul>
+       </div>
+       <div class="bg-purple-50 p-4 rounded-xl border-l-4 border-purple-500">
+        <p class="font-semibold text-purple-900 mb-2">📌 Định nghĩa xâu con:</p>
+        <p>Xâu con của một xâu là xâu thu được bằng cách <strong>xóa đi một số ký tự</strong> (có thể không xóa) mà <strong>giữ nguyên thứ tự</strong> các ký tự còn lại.</p>
+       </div>
+       <div class="bg-orange-50 p-4 rounded-xl border-l-4 border-orange-500">
+        <p class="font-semibold text-orange-900 mb-2">📌 Ví dụ minh họa:</p>
+        <div class="space-y-3 mt-2">
+         <div class="flex flex-wrap gap-4">
+          <div class="flex items-center gap-2">
+           <span>X =</span>
+           <div class="flex">
+            <span class="w-8 h-8 flex items-center justify-center bg-blue-200 border border-blue-400 font-mono">V</span> <span class="w-8 h-8 flex items-center justify-center bg-blue-200 border border-blue-400 font-mono">A</span> <span class="w-8 h-8 flex items-center justify-center bg-blue-200 border border-blue-400 font-mono">N</span> <span class="w-8 h-8 flex items-center justify-center bg-blue-200 border border-blue-400 font-mono">T</span> <span class="w-8 h-8 flex items-center justify-center bg-blue-200 border border-blue-400 font-mono">R</span> <span class="w-8 h-8 flex items-center justify-center bg-blue-200 border border-blue-400 font-mono">U</span> <span class="w-8 h-8 flex items-center justify-center bg-blue-200 border border-blue-400 font-mono">N</span> <span class="w-8 h-8 flex items-center justify-center bg-blue-200 border border-blue-400 font-mono">G</span>
+           </div>
+          </div>
+          <div class="flex items-center gap-2">
+           <span>Y =</span>
+           <div class="flex">
+            <span class="w-8 h-8 flex items-center justify-center bg-green-200 border border-green-400 font-mono">H</span> <span class="w-8 h-8 flex items-center justify-center bg-green-200 border border-green-400 font-mono">O</span> <span class="w-8 h-8 flex items-center justify-center bg-green-200 border border-green-400 font-mono">A</span> <span class="w-8 h-8 flex items-center justify-center bg-green-200 border border-green-400 font-mono">N</span> <span class="w-8 h-8 flex items-center justify-center bg-green-200 border border-green-400 font-mono">G</span> <span class="w-8 h-8 flex items-center justify-center bg-green-200 border border-green-400 font-mono">T</span> <span class="w-8 h-8 flex items-center justify-center bg-green-200 border border-green-400 font-mono">R</span> <span class="w-8 h-8 flex items-center justify-center bg-green-200 border border-green-400 font-mono">O</span> <span class="w-8 h-8 flex items-center justify-center bg-green-200 border border-green-400 font-mono">N</span> <span class="w-8 h-8 flex items-center justify-center bg-green-200 border border-green-400 font-mono">G</span>
+           </div>
+          </div>
+         </div>
+         <div class="bg-white p-3 rounded-lg border-l-4 border-purple-500">
+          <p class="font-semibold text-purple-900 mb-2">✅ Kết quả:</p>
+          <p class="text-purple-800 mb-1"><span class="font-bold">LCS:</span> <span class="bg-green-300 px-2 py-1 rounded font-mono text-lg">ANTRNG</span></p>
+          <p class="text-purple-800 mb-1"><span class="font-bold">Vị trí trong X:</span> <span class="bg-blue-300 px-2 py-1 rounded font-mono">2 3 4 5 7 8</span></p>
+          <p class="text-purple-800"><span class="font-bold">Vị trí trong Y:</span> <span class="bg-green-300 px-2 py-1 rounded font-mono">3 4 6 7 9 10</span></p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Tab 2: Ý tưởng giải thuật -->
+     <div id="tab-algorithm" class="tab-content hidden">
+      <h2 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2" style="font-size: 22px;"><span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm">02</span> Ý tưởng Quy hoạch động</h2>
+      <div class="space-y-5" style="font-size: 20px; color: #1e3a5f;">
+       <!-- Định nghĩa -->
+       <div class="bg-blue-50 p-5 rounded-xl">
+        <p class="font-bold text-blue-900 mb-3">📐 Định nghĩa bảng DP:</p>
+        <div class="bg-white p-4 rounded-lg border-2 border-blue-300">
+         <p class="font-mono text-blue-800">dp[i][j] = độ dài LCS của X[1..i] và Y[1..j]</p>
+        </div>
+       </div><!-- Công thức truy hồi -->
+       <div class="bg-yellow-50 p-5 rounded-xl">
+        <p class="font-bold text-yellow-900 mb-3">🔄 Công thức truy hồi:</p>
+        <div class="bg-white p-4 rounded-lg border-2 border-yellow-400 font-mono text-lg space-y-3">
+         <div class="flex items-start gap-4">
+          <span class="text-gray-600 w-32">dp[i][j] =</span>
+          <div class="space-y-2">
+           <div class="flex items-center gap-2">
+            <span class="bg-gray-200 px-3 py-1 rounded text-blue-800">0</span> <span class="text-gray-600">nếu i = 0 hoặc j = 0</span>
+           </div>
+           <div class="flex items-center gap-2">
+            <span class="bg-green-200 px-3 py-1 rounded text-green-800">dp[i-1][j-1] + 1</span> <span class="text-gray-600">nếu X[i] = Y[j]</span>
+           </div>
+           <div class="flex items-center gap-2">
+            <span class="bg-orange-200 px-3 py-1 rounded text-orange-800">max(dp[i-1][j], dp[i][j-1])</span> <span class="text-gray-600">nếu X[i] ≠ Y[j]</span>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div><!-- Giải thích -->
+       <div class="bg-green-50 p-5 rounded-xl">
+        <p class="font-bold text-green-900 mb-3">💡 Giải thích:</p>
+        <div class="space-y-3">
+         <div class="flex items-start gap-3">
+          <span class="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
+          <p><strong>Trường hợp cơ sở:</strong> Nếu một trong hai xâu rỗng, LCS = 0</p>
+         </div>
+         <div class="flex items-start gap-3">
+          <span class="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
+          <p><strong>Ký tự giống nhau:</strong> Thêm 1 vào kết quả và xét tiếp phần còn lại</p>
+         </div>
+         <div class="flex items-start gap-3">
+          <span class="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
+          <p><strong>Ký tự khác nhau:</strong> Lấy max của việc bỏ qua ký tự ở X hoặc Y</p>
+         </div>
+        </div>
+       </div><!-- Truy vết -->
+       <div class="bg-purple-50 p-5 rounded-xl">
+        <p class="font-bold text-purple-900 mb-3">🔍 Công thức truy vết (từ dp[m][n]):</p>
+        <div class="bg-white p-4 rounded-lg border-2 border-purple-300 font-mono space-y-2">
+         <p class="text-purple-800">• Nếu X[i] = Y[j]: <span class="bg-green-200 px-2 rounded">lấy ký tự</span> → đi về dp[i-1][j-1]</p>
+         <p class="text-purple-800">• Nếu X[i] ≠ Y[j]:</p>
+         <p class="ml-6 text-purple-700">- Nếu dp[i][j] = dp[i][j-1] → đi về dp[i][j-1]</p>
+         <p class="ml-6 text-purple-700">- Ngược lại → đi về dp[i-1][j]</p>
+        </div>
+       </div><!-- Độ phức tạp -->
+       <div class="bg-red-50 p-5 rounded-xl">
+        <p class="font-bold text-red-900 mb-3">⏱️ Độ phức tạp:</p>
+        <div class="flex gap-6">
+         <div class="bg-white px-4 py-2 rounded-lg border border-red-300">
+          <span class="text-gray-600">Thời gian:</span> <span class="font-mono font-bold text-red-700 ml-2">O(m × n)</span>
+         </div>
+         <div class="bg-white px-4 py-2 rounded-lg border border-red-300">
+          <span class="text-gray-600">Bộ nhớ:</span> <span class="font-mono font-bold text-red-700 ml-2">O(m × n)</span>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Tab 3: Minh họa trực quan -->
+     <div id="tab-visualization" class="tab-content hidden">
+      <h2 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2" style="font-size: 22px;"><span class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm">03</span> Minh họa từng bước</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+       <!-- Phần trái: Công thức -->
+       <div class="lg:col-span-1 space-y-4">
+        <!-- Công thức truy hồi -->
+        <div class="formula-box p-4 rounded-xl" style="font-size: 18px;">
+         <p class="font-bold text-blue-900 mb-2">🔄 Công thức truy hồi:</p>
+         <div class="bg-white p-3 rounded-lg font-mono text-sm space-y-1">
+          <p class="text-gray-600">dp[i][j] =</p>
+          <p class="ml-4 text-blue-700">• 0, nếu i=0 hoặc j=0</p>
+          <p class="ml-4 text-green-700">• dp[i-1][j-1]+1, nếu X[i]=Y[j]</p>
+          <p class="ml-4 text-orange-700">• max(dp[i-1][j], dp[i][j-1])</p>
+         </div>
+        </div><!-- Công thức truy vết -->
+        <div class="formula-box p-4 rounded-xl" style="font-size: 18px;">
+         <p class="font-bold text-purple-900 mb-2">🔍 Công thức truy vết:</p>
+         <div class="bg-white p-3 rounded-lg font-mono text-sm space-y-1">
+          <p class="text-gray-600">Từ dp[m][n]:</p>
+          <p class="ml-2 text-green-700">• X[i]=Y[j]: lấy ký tự, về dp[i-1][j-1]</p>
+          <p class="ml-2 text-orange-700">• X[i]≠Y[j]:</p>
+          <p class="ml-4 text-blue-700">- dp[i][j]=dp[i][j-1]: về dp[i][j-1]</p>
+          <p class="ml-4 text-blue-700">- ngược lại: về dp[i-1][j]</p>
+         </div>
+        </div><!-- Trạng thái hiện tại -->
+        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-xl border border-indigo-200">
+         <p class="font-bold text-indigo-900 mb-2">📍 Trạng thái:</p>
+         <div id="current-state" class="bg-white p-3 rounded-lg font-mono text-sm text-indigo-800">
+          Nhấn "Bước tiếp" để bắt đầu
+         </div>
+        </div><!-- Kết quả LCS -->
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+         <p class="font-bold text-green-900 mb-2">🎯 Kết quả LCS:</p>
+         <div id="lcs-result" class="bg-white p-3 rounded-lg font-mono text-xl text-green-800 min-h-8 flex items-center justify-center">
+          -
+         </div>
+        </div>
+       </div><!-- Phần phải: Bảng DP -->
+       <div class="lg:col-span-2">
+        <!-- Điều khiển -->
+        <div class="flex flex-wrap gap-2 mb-4 justify-center">
+         <button onclick="resetVisualization()" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 font-semibold transition-all" style="font-size: 16px;"> 🔄 Reset </button> <button onclick="nextStep()" id="btn-next" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-all pulse-animation" style="font-size: 16px;"> ▶️ Bước tiếp </button> <button onclick="autoRun()" id="btn-auto" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition-all" style="font-size: 16px;"> ⏩ Tự động </button> <button onclick="startTraceback()" id="btn-trace" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed" style="font-size: 16px;" disabled> 🔍 Truy vết </button> <button onclick="traceStep()" id="btn-trace-step" class="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed" style="font-size: 16px;" disabled> 👣 Bước truy vết </button>
+        </div><!-- Bảng DP -->
+        <div class="overflow-x-auto">
+         <table id="dp-table" class="mx-auto border-collapse" style="font-size: 16px;">
+          <!-- Được tạo bởi JavaScript -->
+         </table>
+        </div><!-- Chú thích -->
+        <div class="flex flex-wrap gap-4 justify-center mt-4" style="font-size: 14px;">
+         <div class="flex items-center gap-2">
+          <div class="w-6 h-6 bg-gradient-to-br from-yellow-300 to-amber-400 rounded"></div><span class="text-gray-700">Ô đang xét</span>
+         </div>
+         <div class="flex items-center gap-2">
+          <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-emerald-500 rounded"></div><span class="text-gray-700">Đường truy vết</span>
+         </div>
+         <div class="flex items-center gap-2">
+          <div class="w-6 h-6 bg-gradient-to-br from-pink-400 to-rose-500 rounded"></div><span class="text-gray-700">Ký tự được chọn</span>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Tab 4: Code hoàn chỉnh -->
+     <div id="tab-code" class="tab-content hidden">
+      <h2 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2" style="font-size: 22px;"><span class="bg-orange-500 text-white px-3 py-1 rounded-full text-sm">04</span> Code C++ hoàn chỉnh</h2>
+      <div class="space-y-4">
+       <!-- Code block -->
+       <div class="bg-amber-50 rounded-xl p-4 border border-amber-200 overflow-x-auto">
+        <pre class="code-block text-sm leading-relaxed" style="font-size: 16px;"><code><span style="color: #0066cc;">#include</span> <span style="color: #009900;">&lt;bits/stdc++.h&gt;</span>
+<span style="color: #0066cc;">#define</span> <span style="color: #990099;">N</span> <span style="color: #cc6600;">100</span>
+<span style="color: #0066cc;">using namespace</span> std;
+
+<span style="color: #006699;">int</span> dp[N+<span style="color: #cc6600;">1</span>][N+<span style="color: #cc6600;">1</span>];          <span style="color: #888888;">// Bảng DP</span>
+<span style="color: #006699;">int</span> kqX[N+<span style="color: #cc6600;">1</span>], kqY[N+<span style="color: #cc6600;">1</span>];    <span style="color: #888888;">// Đánh dấu vị trí ký tự được chọn</span>
+<span style="color: #006699;">int</span> m, n;                    <span style="color: #888888;">// Độ dài xâu X và Y</span>
+<span style="color: #006699;">string</span> X, Y, S = <span style="color: #009900;">""</span>;        <span style="color: #888888;">// Xâu đầu vào và kết quả</span>
+
+<span style="color: #006699;">int</span> <span style="color: #0066cc;">main</span>() {
+    cin &gt;&gt; X &gt;&gt; Y;
+    
+    <span style="color: #888888;">// Thêm ký tự đầu để đánh số từ 1</span>
+    X = <span style="color: #009900;">" "</span> + X;
+    Y = <span style="color: #009900;">" "</span> + Y;
+    m = X.<span style="color: #0066cc;">size</span>() - <span style="color: #cc6600;">1</span>;
+    n = Y.<span style="color: #0066cc;">size</span>() - <span style="color: #cc6600;">1</span>;
+    
+    <span style="color: #888888;">// ═══════════════════════════════════════</span>
+    <span style="color: #888888;">// PHẦN 1: ĐIỀN BẢNG DP</span>
+    <span style="color: #888888;">// ═══════════════════════════════════════</span>
+    <span style="color: #0066cc;">for</span> (<span style="color: #006699;">int</span> i = <span style="color: #cc6600;">1</span>; i &lt;= m; i++) {
+        <span style="color: #0066cc;">for</span> (<span style="color: #006699;">int</span> j = <span style="color: #cc6600;">1</span>; j &lt;= n; j++) {
+            <span style="color: #0066cc;">if</span> (X[i] == Y[j]) 
+                <span style="color: #888888;">// Ký tự giống: thêm 1 vào kết quả</span>
+                dp[i][j] = dp[i-<span style="color: #cc6600;">1</span>][j-<span style="color: #cc6600;">1</span>] + <span style="color: #cc6600;">1</span>;
+            <span style="color: #0066cc;">else</span> 
+                <span style="color: #888888;">// Ký tự khác: lấy max</span>
+                dp[i][j] = <span style="color: #0066cc;">max</span>(dp[i-<span style="color: #cc6600;">1</span>][j], dp[i][j-<span style="color: #cc6600;">1</span>]);
+        }
+    }
+
+    <span style="color: #888888;">// ═══════════════════════════════════════</span>
+    <span style="color: #888888;">// PHẦN 2: TRUY VẾT TÌM XÂU CON</span>
+    <span style="color: #888888;">// ═══════════════════════════════════════</span>
+    <span style="color: #006699;">int</span> i = m, j = n;
+    <span style="color: #0066cc;">while</span> (i &gt; <span style="color: #cc6600;">0</span> &amp;&amp; j &gt; <span style="color: #cc6600;">0</span>) {
+        <span style="color: #0066cc;">if</span> (X[i] == Y[j]) {
+            <span style="color: #888888;">// Ký tự giống: thêm vào kết quả</span>
+            S = X[i] + S;
+            kqX[i] = kqY[j] = <span style="color: #cc6600;">1</span>;  <span style="color: #888888;">// Đánh dấu vị trí</span>
+            i--; j--;              <span style="color: #888888;">// Đi chéo</span>
+        }
+        <span style="color: #0066cc;">else if</span> (dp[i][j] == dp[i][j-<span style="color: #cc6600;">1</span>]) 
+            j--;                   <span style="color: #888888;">// Đi sang trái</span>
+        <span style="color: #0066cc;">else</span> 
+            i--;                   <span style="color: #888888;">// Đi lên trên</span>
+    }
+
+    <span style="color: #888888;">// ═══════════════════════════════════════</span>
+    <span style="color: #888888;">// PHẦN 3: IN KẾT QUẢ</span>
+    <span style="color: #888888;">// ═══════════════════════════════════════</span>
+    cout &lt;&lt; <span style="color: #009900;">"LCS: "</span> &lt;&lt; S &lt;&lt; <span style="color: #009900;">"\n"</span>;
+    
+    cout &lt;&lt; <span style="color: #009900;">"Vị trí trong X: "</span>;
+    <span style="color: #0066cc;">for</span> (<span style="color: #006699;">int</span> i = <span style="color: #cc6600;">1</span>; i &lt;= m; i++)
+        <span style="color: #0066cc;">if</span> (kqX[i] == <span style="color: #cc6600;">1</span>) cout &lt;&lt; i &lt;&lt; <span style="color: #009900;">" "</span>;
+    cout &lt;&lt; <span style="color: #009900;">"\n"</span>;
+    
+    cout &lt;&lt; <span style="color: #009900;">"Vị trí trong Y: "</span>;
+    <span style="color: #0066cc;">for</span> (<span style="color: #006699;">int</span> i = <span style="color: #cc6600;">1</span>; i &lt;= n; i++)
+        <span style="color: #0066cc;">if</span> (kqY[i] == <span style="color: #cc6600;">1</span>) cout &lt;&lt; i &lt;&lt; <span style="color: #009900;">" "</span>;
+    
+    <span style="color: #0066cc;">return</span> <span style="color: #cc6600;">0</span>;
+}</code></pre>
+       </div><!-- Giải thích các phần -->
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-4" style="font-size: 18px;">
+        <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+         <p class="font-bold text-blue-900 mb-2">📊 Phần 1: Điền bảng</p>
+         <p class="text-blue-800">Duyệt qua từng cặp (i,j), áp dụng công thức truy hồi để tính dp[i][j].</p>
+        </div>
+        <div class="bg-green-50 p-4 rounded-xl border border-green-200">
+         <p class="font-bold text-green-900 mb-2">🔍 Phần 2: Truy vết</p>
+         <p class="text-green-800">Đi ngược từ dp[m][n], tìm các ký tự thuộc LCS và đánh dấu vị trí.</p>
+        </div>
+        <div class="bg-purple-50 p-4 rounded-xl border border-purple-200">
+         <p class="font-bold text-purple-900 mb-2">📝 Phần 3: Kết quả</p>
+         <p class="text-purple-800">In xâu LCS và các vị trí ký tự được chọn trong X và Y.</p>
+        </div>
+       </div><!-- Ví dụ output -->
+       <div class="bg-gray-800 rounded-xl p-4 text-green-400 font-mono" style="font-size: 16px;">
+        <p class="text-gray-400 mb-2">// Ví dụ với X = "VANTRUNG", Y = "HOANGTRONG"</p>
+        <p><span class="text-yellow-400">Input:</span> VANTRUNG HOANGTRONG</p>
+        <p><span class="text-yellow-400">Output:</span></p>
+        <p class="ml-4">LCS: ANTRNG</p>
+        <p class="ml-4">Vị trí trong X: 2 3 4 5 7 8</p>
+        <p class="ml-4">Vị trí trong Y: 3 4 6 7 9 10</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Footer -->
+    <footer class="text-center mt-6 text-blue-600" style="font-size: 16px;">
+     <p>🎓 Minh họa thuật toán Quy hoạch động - Xâu con chung dài nhất</p>
+    </footer>
+   </div>
+  </div>
+  <script>
+    // Dữ liệu
+    const X = " VANTRUNG";    // Thêm space đầu để đánh số từ 1
+    const Y = " HOANGTRONG";
+    const m = X.length - 1;   // 8
+    const n = Y.length - 1;   // 10
+
+    // Trạng thái
+    let dp = [];
+    let currentI = 0;
+    let currentJ = 0;
+    let phase = 'fill'; // 'fill' hoặc 'trace'
+    let isComplete = false;
+    let autoRunning = false;
+    let autoInterval = null;
+
+    // Truy vết
+    let traceI = m;
+    let traceJ = n;
+    let lcsResult = "";
+    let tracePath = [];
+
+    // Config mặc định
+    const defaultConfig = {
+      main_title: "🧬 Xâu Con Chung Dài Nhất (LCS)"
+    };
+
+    // Khởi tạo
+    function init() {
+      // Khởi tạo bảng dp
+      dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+      createTable();
+    }
+
+    // Tạo bảng HTML
+    function createTable() {
+      const table = document.getElementById('dp-table');
+      let html = '';
+
+      // Header row
+      html += '<tr>';
+      html += '<th class="w-10 h-10 bg-blue-900 text-white border border-blue-700"></th>';
+      html += '<th class="w-10 h-10 bg-blue-900 text-white border border-blue-700 font-mono">j</th>';
+      for (let j = 0; j <= n; j++) {
+        html += `<th class="w-10 h-10 bg-blue-800 text-white border border-blue-600 font-mono">${j}</th>`;
+      }
+      html += '</tr>';
+
+      // Y characters row
+      html += '<tr>';
+      html += '<th class="w-10 h-10 bg-blue-900 text-white border border-blue-700 font-mono">i</th>';
+      html += '<th class="w-10 h-10 bg-blue-800 text-yellow-300 border border-blue-600 font-bold">Y→</th>';
+      for (let j = 0; j <= n; j++) {
+        const char = j === 0 ? '' : Y[j];
+        html += `<th class="w-10 h-10 bg-green-100 text-green-800 border border-green-300 font-mono font-bold">${char}</th>`;
+      }
+      html += '</tr>';
+
+      // DP rows
+      for (let i = 0; i <= m; i++) {
+        html += '<tr>';
+        html += `<th class="w-10 h-10 bg-blue-800 text-white border border-blue-600 font-mono">${i}</th>`;
+        const charX = i === 0 ? '↓X' : X[i];
+        const bgClass = i === 0 ? 'bg-blue-100 text-blue-800' : 'bg-blue-100 text-blue-800';
+        html += `<th class="w-10 h-10 ${bgClass} border border-blue-300 font-mono font-bold">${charX}</th>`;
+        
+        for (let j = 0; j <= n; j++) {
+          const value = (i === 0 || j === 0) ? '0' : '';
+          const cellBg = (i === 0 || j === 0) ? 'bg-gray-100' : 'bg-white';
+          html += `<td id="cell-${i}-${j}" class="cell w-10 h-10 ${cellBg} border border-gray-300 text-center font-mono font-semibold text-blue-900">${value}</td>`;
+        }
+        html += '</tr>';
+      }
+
+      table.innerHTML = html;
+    }
+
+    // Tab switching
+    function showTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+      });
+      
+      // Remove active from all buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Show selected tab
+      document.getElementById('tab-' + tabName).classList.remove('hidden');
+      
+      // Activate button
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    }
+
+    // Reset
+    function resetVisualization() {
+      stopAuto();
+      dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+      currentI = 0;
+      currentJ = 0;
+      phase = 'fill';
+      isComplete = false;
+      traceI = m;
+      traceJ = n;
+      lcsResult = "";
+      tracePath = [];
+      
+      createTable();
+      document.getElementById('current-state').innerHTML = 'Nhấn "Bước tiếp" để bắt đầu';
+      document.getElementById('lcs-result').innerHTML = '-';
+      document.getElementById('btn-trace').disabled = true;
+      document.getElementById('btn-trace-step').disabled = true;
+      document.getElementById('btn-next').disabled = false;
+    }
+
+    // Bước tiếp theo (điền bảng)
+    function nextStep() {
+      if (isComplete) return;
+
+      // Tìm ô tiếp theo cần điền
+      if (currentI === 0 && currentJ === 0) {
+        currentI = 1;
+        currentJ = 1;
+      } else {
+        currentJ++;
+        if (currentJ > n) {
+          currentJ = 1;
+          currentI++;
+        }
+      }
+
+      if (currentI > m) {
+        isComplete = true;
+        stopAuto();
+        document.getElementById('current-state').innerHTML = `
+          <span class="text-green-700 font-bold">✅ Hoàn thành điền bảng!</span><br>
+          <span class="text-purple-700">dp[${m}][${n}] = ${dp[m][n]}</span><br>
+          <span class="text-gray-600">Nhấn "Truy vết" để tìm LCS</span>
+        `;
+        document.getElementById('btn-trace').disabled = false;
+        document.getElementById('btn-next').disabled = true;
+        return;
+      }
+
+      // Clear previous highlight
+      document.querySelectorAll('.cell.highlight').forEach(cell => {
+        cell.classList.remove('highlight');
+      });
+
+      // Tính giá trị
+      const i = currentI;
+      const j = currentJ;
+      
+      if (X[i] === Y[j]) {
+        dp[i][j] = dp[i-1][j-1] + 1;
+      } else {
+        dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+      }
+
+      // Cập nhật ô
+      const cell = document.getElementById(`cell-${i}-${j}`);
+      cell.textContent = dp[i][j];
+      cell.classList.add('highlight');
+
+      // Cập nhật trạng thái
+      const formula = X[i] === Y[j] 
+        ? `X[${i}]='${X[i]}' = Y[${j}]='${Y[j]}'<br>→ dp[${i-1}][${j-1}] + 1 = ${dp[i-1][j-1]} + 1 = <strong>${dp[i][j]}</strong>`
+        : `X[${i}]='${X[i]}' ≠ Y[${j}]='${Y[j]}'<br>→ max(dp[${i-1}][${j}], dp[${i}][${j-1}]) = max(${dp[i-1][j]}, ${dp[i][j-1]}) = <strong>${dp[i][j]}</strong>`;
+      
+      document.getElementById('current-state').innerHTML = `
+        <span class="text-blue-700">Đang xét: dp[${i}][${j}]</span><br>
+        ${formula}
+      `;
+    }
+
+    // Tự động chạy
+    function autoRun() {
+      if (autoRunning) {
+        stopAuto();
+        return;
+      }
+      
+      autoRunning = true;
+      document.getElementById('btn-auto').innerHTML = '⏸️ Dừng';
+      document.getElementById('btn-auto').classList.remove('bg-green-600', 'hover:bg-green-700');
+      document.getElementById('btn-auto').classList.add('bg-red-600', 'hover:bg-red-700');
+      
+      autoInterval = setInterval(() => {
+        if (isComplete) {
+          stopAuto();
+          return;
+        }
+        nextStep();
+      }, 200);
+    }
+
+    function stopAuto() {
+      autoRunning = false;
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+      }
+      document.getElementById('btn-auto').innerHTML = '⏩ Tự động';
+      document.getElementById('btn-auto').classList.remove('bg-red-600', 'hover:bg-red-700');
+      document.getElementById('btn-auto').classList.add('bg-green-600', 'hover:bg-green-700');
+    }
+
+    // Bắt đầu truy vết
+    function startTraceback() {
+      phase = 'trace';
+      traceI = m;
+      traceJ = n;
+      lcsResult = "";
+      tracePath = [];
+      
+      // Clear highlights
+      document.querySelectorAll('.cell.highlight').forEach(cell => {
+        cell.classList.remove('highlight');
+      });
+      
+      // Highlight starting cell
+      document.getElementById(`cell-${m}-${n}`).classList.add('traced');
+      tracePath.push({i: m, j: n});
+      
+      document.getElementById('current-state').innerHTML = `
+        <span class="text-purple-700 font-bold">🔍 Bắt đầu truy vết</span><br>
+        <span class="text-gray-600">Từ dp[${m}][${n}] = ${dp[m][n]}</span><br>
+        <span class="text-gray-600">Nhấn "Bước truy vết"</span>
+      `;
+      
+      document.getElementById('btn-trace').disabled = true;
+      document.getElementById('btn-trace-step').disabled = false;
+    }
+
+    // Bước truy vết
+    function traceStep() {
+      if (traceI <= 0 || traceJ <= 0) {
+        // Hoàn thành truy vết
+        document.getElementById('current-state').innerHTML = `
+          <span class="text-green-700 font-bold">✅ Hoàn thành truy vết!</span><br>
+          <span class="text-purple-700">LCS = "${lcsResult}"</span><br>
+          <span class="text-gray-600">Độ dài: ${lcsResult.length}</span>
+        `;
+        document.getElementById('btn-trace-step').disabled = true;
+        return;
+      }
+
+      const i = traceI;
+      const j = traceJ;
+      
+      // Clear previous traced cell
+      document.querySelectorAll('.cell.traced').forEach(cell => {
+        if (!cell.classList.contains('path')) {
+          cell.classList.remove('traced');
+        }
+      });
+
+      if (X[i] === Y[j]) {
+        // Lấy ký tự
+        lcsResult = X[i] + lcsResult;
+        document.getElementById(`cell-${i}-${j}`).classList.add('path');
+        
+        document.getElementById('current-state').innerHTML = `
+          <span class="text-green-700 font-bold">✓ X[${i}]='${X[i]}' = Y[${j}]='${Y[j]}'</span><br>
+          <span class="text-green-600">→ Lấy ký tự '${X[i]}'</span><br>
+          <span class="text-gray-600">→ Đi về dp[${i-1}][${j-1}]</span>
+        `;
+        
+        traceI--;
+        traceJ--;
+      } else if (dp[i][j] === dp[i][j-1]) {
+        document.getElementById('current-state').innerHTML = `
+          <span class="text-orange-700">✗ X[${i}]='${X[i]}' ≠ Y[${j}]='${Y[j]}'</span><br>
+          <span class="text-blue-600">dp[${i}][${j}] = dp[${i}][${j-1}] = ${dp[i][j-1]}</span><br>
+          <span class="text-gray-600">→ Đi sang trái dp[${i}][${j-1}]</span>
+        `;
+        traceJ--;
+      } else {
+        document.getElementById('current-state').innerHTML = `
+          <span class="text-orange-700">✗ X[${i}]='${X[i]}' ≠ Y[${j}]='${Y[j]}'</span><br>
+          <span class="text-blue-600">dp[${i}][${j}] = dp[${i-1}][${j}] = ${dp[i-1][j]}</span><br>
+          <span class="text-gray-600">→ Đi lên trên dp[${i-1}][${j}]</span>
+        `;
+        traceI--;
+      }
+
+      // Highlight next cell
+      if (traceI > 0 && traceJ > 0) {
+        document.getElementById(`cell-${traceI}-${traceJ}`).classList.add('traced');
+      }
+
+      // Update result display
+      if (lcsResult) {
+        document.getElementById('lcs-result').innerHTML = `
+          <span class="result-char">${lcsResult.split('').map(c => 
+            `<span class="inline-block bg-green-500 text-white px-2 py-1 rounded mx-0.5">${c}</span>`
+          ).join('')}</span>
+        `;
+      }
+
+      // Check if done
+      if (traceI <= 0 || traceJ <= 0) {
+        setTimeout(() => {
+          document.getElementById('current-state').innerHTML = `
+            <span class="text-green-700 font-bold">✅ Hoàn thành truy vết!</span><br>
+            <span class="text-purple-700">LCS = "${lcsResult}"</span><br>
+            <span class="text-gray-600">Độ dài: ${lcsResult.length}</span>
+          `;
+          document.getElementById('btn-trace-step').disabled = true;
+        }, 500);
+      }
+    }
+
+    // Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig: defaultConfig,
+        onConfigChange: async (config) => {
+          const title = document.getElementById('main-title');
+          if (title) {
+            title.textContent = config.main_title || defaultConfig.main_title;
+          }
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["main_title", config.main_title || defaultConfig.main_title]
+        ])
+      });
+    }
+
+    // Khởi chạy
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d71ecc536efce3e',t:'MTc3MjYzODI1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

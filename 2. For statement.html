@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="vi" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trực quan hóa vòng lặp for trong Python</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+    
+    * {
+      font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .flowchart-node {
+      transition: all 0.4s ease;
+    }
+    
+    .flowchart-node.active {
+      filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.8));
+    }
+    
+    .arrow-path {
+      stroke-dasharray: 8;
+      animation: none;
+    }
+    
+    .arrow-path.animated {
+      animation: flowArrow 0.8s linear infinite;
+    }
+    
+    @keyframes flowArrow {
+      to {
+        stroke-dashoffset: -16;
+      }
+    }
+    
+    .code-line {
+      transition: background-color 0.3s ease;
+    }
+    
+    .progress-item {
+      transition: all 0.3s ease;
+    }
+    
+    .pulse-animation {
+      animation: pulse 1s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .console-entry {
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-gradient-to-br from-slate-50 to-blue-50 overflow-auto">
+  <div class="w-full min-h-full p-4 md:p-6">
+   <!-- PHẦN TRÊN - TÓM TẮT LÝ THUYẾT -->
+   <div class="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl shadow-lg p-5 mb-5 border border-blue-200">
+    <h1 id="main-title" class="text-2xl md:text-3xl font-bold text-blue-800 text-center mb-4">🐍 Trực quan hóa vòng lặp for trong Python</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+     <!-- range(n) -->
+     <div class="bg-white/70 rounded-lg p-4 border border-blue-200">
+      <div class="code-font text-base bg-slate-800 text-green-400 p-3 rounded-lg mb-2">
+       <span class="text-pink-400">for</span> <span class="text-yellow-300">i</span> <span class="text-pink-400">in</span> <span class="text-purple-400">range</span>(<span class="text-cyan-300">n</span>):
+      </div>
+      <p class="text-slate-700 text-sm">📌 Lặp từ <strong class="text-blue-600">0</strong> đến <strong class="text-blue-600">n-1</strong></p>
+     </div><!-- range(a, b) -->
+     <div class="bg-white/70 rounded-lg p-4 border border-blue-200">
+      <div class="code-font text-base bg-slate-800 text-green-400 p-3 rounded-lg mb-2">
+       <span class="text-pink-400">for</span> <span class="text-yellow-300">i</span> <span class="text-pink-400">in</span> <span class="text-purple-400">range</span>(<span class="text-cyan-300">a</span>, <span class="text-cyan-300">b</span>):
+      </div>
+      <p class="text-slate-700 text-sm">📌 Lặp từ <strong class="text-blue-600">a</strong> đến <strong class="text-blue-600">b-1</strong></p>
+     </div><!-- range(a, b, step) -->
+     <div class="bg-white/70 rounded-lg p-4 border border-blue-200">
+      <div class="code-font text-base bg-slate-800 text-green-400 p-3 rounded-lg mb-2">
+       <span class="text-pink-400">for</span> <span class="text-yellow-300">i</span> <span class="text-pink-400">in</span> <span class="text-purple-400">range</span>(<span class="text-cyan-300">a</span>, <span class="text-cyan-300">b</span>, <span class="text-cyan-300">step</span>):
+      </div>
+      <p class="text-slate-700 text-sm">📌 Lặp từ <strong class="text-blue-600">a</strong> đến <strong class="text-blue-600">b-1</strong>, bước nhảy <strong class="text-blue-600">step</strong></p>
+     </div>
+    </div>
+   </div><!-- PHẦN GIỮA - ĐIỀU KHIỂN -->
+   <div class="bg-white rounded-xl shadow-lg p-5 mb-5 border border-slate-200">
+    <div class="flex flex-wrap items-center gap-4 mb-4">
+     <!-- Input controls -->
+     <div class="flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-2">
+       <label class="text-slate-600 font-medium text-sm">start:</label> <input type="number" id="input-start" value="0" class="w-16 px-3 py-2 border-2 border-blue-300 rounded-lg text-center font-semibold focus:border-blue-500 focus:outline-none">
+      </div>
+      <div class="flex items-center gap-2">
+       <label class="text-slate-600 font-medium text-sm">end:</label> <input type="number" id="input-end" value="5" class="w-16 px-3 py-2 border-2 border-blue-300 rounded-lg text-center font-semibold focus:border-blue-500 focus:outline-none">
+      </div>
+      <div class="flex items-center gap-2">
+       <label class="text-slate-600 font-medium text-sm">step:</label> <input type="number" id="input-step" value="1" class="w-16 px-3 py-2 border-2 border-blue-300 rounded-lg text-center font-semibold focus:border-blue-500 focus:outline-none">
+      </div>
+     </div><!-- Buttons -->
+     <div class="flex flex-wrap gap-2">
+      <button id="btn-step" onclick="runStep()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow transition-all flex items-center gap-2"> <span>👆</span> Từng bước </button> <button id="btn-auto" onclick="runAuto()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow transition-all flex items-center gap-2"> <span>▶️</span> Tự động </button> <button id="btn-pause" onclick="pauseAuto()" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow transition-all flex items-center gap-2 hidden"> <span>⏸️</span> Tạm dừng </button> <button onclick="resetAll()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow transition-all flex items-center gap-2"> <span>🔄</span> Reset </button>
+     </div>
+    </div><!-- Status display -->
+    <div class="flex flex-wrap gap-4 items-center bg-gradient-to-r from-slate-100 to-blue-50 rounded-lg p-4">
+     <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-blue-200">
+      <span class="text-slate-600">Giá trị i:</span> <span id="display-i" class="text-2xl font-bold text-blue-600">-</span>
+     </div>
+     <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-green-200">
+      <span class="text-slate-600">Số lần lặp:</span> <span id="display-iteration" class="text-2xl font-bold text-green-600">0</span>
+     </div>
+     <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-purple-200">
+      <span class="text-slate-600">Tổng vòng lặp:</span> <span id="display-total" class="text-2xl font-bold text-purple-600">0</span>
+     </div>
+     <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm border border-orange-200">
+      <span class="text-slate-600">Trạng thái:</span> <span id="display-status" class="font-semibold text-orange-600">Chờ bắt đầu</span>
+     </div>
+    </div><!-- Progress Bar -->
+    <div class="mt-4">
+     <p class="text-slate-600 font-medium mb-2">📊 Thanh tiến trình giá trị i:</p>
+     <div id="progress-bar" class="flex gap-1 flex-wrap bg-slate-100 p-3 rounded-lg min-h-[50px]">
+      <!-- Progress items will be generated here -->
+     </div>
+    </div>
+   </div><!-- PHẦN DƯỚI - CHIA 2 CỘT -->
+   <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <!-- CỘT TRÁI - SƠ ĐỒ KHỐI -->
+    <div class="bg-white rounded-xl shadow-lg p-5 border border-slate-200">
+     <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">📊 Sơ đồ khối (Flowchart)</h2>
+     <div class="flex justify-center">
+      <svg id="flowchart" viewbox="0 0 300 480" class="w-full max-w-[300px]">
+       <!-- Arrows --> <!-- Start to Init --> <path id="arrow-1" class="arrow-path" d="M150 45 L150 70" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" /> <!-- Init to Check --> <path id="arrow-2" class="arrow-path" d="M150 110 L150 135" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" /> <!-- Check to Print (True) --> <path id="arrow-3-true" class="arrow-path" d="M150 195 L150 230" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arrowhead-green)" /> <!-- Check to End (False) --> <path id="arrow-3-false" class="arrow-path" d="M210 165 L250 165 L250 430 L180 430" stroke="#ef4444" stroke-width="2" fill="none" marker-end="url(#arrowhead-red)" /> <!-- Print to Increment --> <path id="arrow-4" class="arrow-path" d="M150 280 L150 310" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" /> <!-- Increment back to Check --> <path id="arrow-5" class="arrow-path" d="M90 340 L50 340 L50 165 L90 165" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" /> <!-- Arrow markers --> <defs>
+        <marker id="arrowhead" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
+         <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+        </marker>
+        <marker id="arrowhead-green" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
+         <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
+        </marker>
+        <marker id="arrowhead-red" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
+         <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
+        </marker>
+       </defs> <!-- Labels --> <text x="160" y="218" font-size="11" fill="#22c55e" font-weight="bold">
+        True
+       </text> <text x="220" y="158" font-size="11" fill="#ef4444" font-weight="bold">
+        False
+       </text> <!-- START Node --> <g id="node-start" class="flowchart-node">
+        <ellipse cx="150" cy="30" rx="50" ry="20" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2" />
+        <text x="150" y="35" text-anchor="middle" fill="white" font-weight="bold" font-size="14">
+         START
+        </text>
+       </g> <!-- INIT Node --> <g id="node-init" class="flowchart-node">
+        <rect x="75" y="75" width="150" height="40" rx="8" fill="#8b5cf6" stroke="#6d28d9" stroke-width="2" />
+        <text x="150" y="100" text-anchor="middle" fill="white" font-weight="bold" font-size="13">
+         i = 
+         <tspan id="init-value">
+          start
+         </tspan>
+        </text>
+       </g> <!-- CHECK Node (Diamond) --> <g id="node-check" class="flowchart-node">
+        <polygon points="150,135 210,165 150,195 90,165" fill="#f59e0b" stroke="#d97706" stroke-width="2" />
+        <text x="150" y="170" text-anchor="middle" fill="white" font-weight="bold" font-size="12">
+         i &lt; 
+         <tspan id="check-end">
+          end
+         </tspan> ?
+        </text>
+       </g> <!-- PRINT Node --> <g id="node-print" class="flowchart-node">
+        <rect x="75" y="235" width="150" height="40" rx="8" fill="#10b981" stroke="#059669" stroke-width="2" />
+        <text x="150" y="260" text-anchor="middle" fill="white" font-weight="bold" font-size="13">
+         print(i)
+        </text>
+       </g> <!-- INCREMENT Node --> <g id="node-increment" class="flowchart-node">
+        <rect x="75" y="315" width="150" height="40" rx="8" fill="#ec4899" stroke="#db2777" stroke-width="2" />
+        <text x="150" y="340" text-anchor="middle" fill="white" font-weight="bold" font-size="13">
+         i = i + 
+         <tspan id="step-value">
+          step
+         </tspan>
+        </text>
+       </g> <!-- END Node --> <g id="node-end" class="flowchart-node">
+        <ellipse cx="150" cy="430" rx="50" ry="20" fill="#ef4444" stroke="#dc2626" stroke-width="2" />
+        <text x="150" y="435" text-anchor="middle" fill="white" font-weight="bold" font-size="14">
+         END
+        </text>
+       </g>
+      </svg>
+     </div>
+    </div><!-- CỘT PHẢI - CODE PYTHON + CONSOLE -->
+    <div class="flex flex-col gap-5">
+     <!-- Code Panel -->
+     <div class="bg-white rounded-xl shadow-lg p-5 border border-slate-200">
+      <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">💻 Code Python</h2>
+      <div class="bg-slate-100 rounded-lg p-4 code-font text-base overflow-x-auto border border-slate-300">
+       <div id="code-line-1" class="code-line px-3 py-2 rounded">
+        <span class="text-red-600 font-semibold">for</span> <span class="text-slate-800">i</span> <span class="text-red-600 font-semibold">in</span> <span class="text-purple-700">range</span>(<span id="code-start" class="text-blue-600">0</span>, <span id="code-end" class="text-blue-600">5</span>, <span id="code-step" class="text-blue-600">1</span>):
+       </div>
+       <div id="code-line-2" class="code-line px-3 py-2 rounded ml-8">
+        <span class="text-purple-700">print</span>(<span class="text-slate-800">i</span>)
+       </div>
+      </div><!-- Execution explanation -->
+      <div id="execution-explanation" class="mt-4 bg-blue-50 rounded-lg p-4 border border-blue-200">
+       <p class="text-slate-700 font-medium">📝 <span id="explanation-text">Nhấn "Từng bước" hoặc "Tự động" để bắt đầu!</span></p>
+      </div>
+     </div><!-- Console Output -->
+     <div class="bg-white rounded-xl shadow-lg p-5 border border-slate-200 flex-1">
+      <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">🖥️ Console Output</h2>
+      <div id="console-output" class="bg-slate-900 rounded-lg p-4 code-font text-green-400 min-h-[120px] max-h-[200px] overflow-y-auto">
+       <div class="text-slate-500">
+        &gt;&gt;&gt; # Output sẽ hiển thị ở đây
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Configuration
+    const defaultConfig = {
+      main_title: "🐍 Trực quan hóa vòng lặp for trong Python"
+    };
+
+    // State variables
+    let startValue = 0;
+    let endValue = 5;
+    let stepValue = 1;
+    let currentI = 0;
+    let stepIndex = 0;
+    let iterationCount = 0;
+    let totalIterations = 0;
+    let autoInterval = null;
+    let isRunning = false;
+    let loopValues = [];
+
+    // Steps: 0=idle, 1=start, 2=init, 3=check, 4=print, 5=increment, 6=end
+    const STEP_IDLE = 0;
+    const STEP_START = 1;
+    const STEP_INIT = 2;
+    const STEP_CHECK = 3;
+    const STEP_PRINT = 4;
+    const STEP_INCREMENT = 5;
+    const STEP_END = 6;
+
+    // Initialize
+    function init() {
+      updateCodeDisplay();
+      calculateTotalIterations();
+      generateProgressBar();
+      resetHighlights();
+    }
+
+    function calculateTotalIterations() {
+      loopValues = [];
+      if (stepValue > 0) {
+        for (let i = startValue; i < endValue; i += stepValue) {
+          loopValues.push(i);
+        }
+      } else if (stepValue < 0) {
+        for (let i = startValue; i > endValue; i += stepValue) {
+          loopValues.push(i);
+        }
+      }
+      totalIterations = loopValues.length;
+      document.getElementById('display-total').textContent = totalIterations;
+    }
+
+    function generateProgressBar() {
+      const container = document.getElementById('progress-bar');
+      container.innerHTML = '';
+      
+      if (loopValues.length === 0) {
+        container.innerHTML = '<span class="text-slate-500 text-sm">Không có giá trị nào (kiểm tra start, end, step)</span>';
+        return;
+      }
+      
+      loopValues.forEach((val, idx) => {
+        const item = document.createElement('div');
+        item.id = `progress-${idx}`;
+        item.className = 'progress-item px-4 py-2 bg-slate-200 rounded-lg font-bold text-slate-600 text-center min-w-[45px]';
+        item.textContent = val;
+        container.appendChild(item);
+      });
+    }
+
+    function updateProgressBar(currentIndex) {
+      loopValues.forEach((_, idx) => {
+        const item = document.getElementById(`progress-${idx}`);
+        if (item) {
+          if (idx < currentIndex) {
+            item.className = 'progress-item px-4 py-2 bg-green-200 rounded-lg font-bold text-green-700 text-center min-w-[45px]';
+          } else if (idx === currentIndex) {
+            item.className = 'progress-item px-4 py-2 bg-yellow-400 rounded-lg font-bold text-slate-800 text-center min-w-[45px] pulse-animation shadow-lg';
+          } else {
+            item.className = 'progress-item px-4 py-2 bg-slate-200 rounded-lg font-bold text-slate-600 text-center min-w-[45px]';
+          }
+        }
+      });
+    }
+
+    function updateCodeDisplay() {
+      startValue = parseInt(document.getElementById('input-start').value) || 0;
+      endValue = parseInt(document.getElementById('input-end').value) || 5;
+      stepValue = parseInt(document.getElementById('input-step').value) || 1;
+      
+      document.getElementById('code-start').textContent = startValue;
+      document.getElementById('code-end').textContent = endValue;
+      document.getElementById('code-step').textContent = stepValue;
+      
+      document.getElementById('init-value').textContent = startValue;
+      document.getElementById('check-end').textContent = endValue;
+      document.getElementById('step-value').textContent = stepValue;
+    }
+
+    function resetHighlights() {
+      // Reset all nodes
+      document.querySelectorAll('.flowchart-node').forEach(node => {
+        node.classList.remove('active');
+        const shapes = node.querySelectorAll('ellipse, rect, polygon');
+        shapes.forEach(shape => {
+          shape.style.fill = '';
+        });
+      });
+      
+      // Reset arrows
+      document.querySelectorAll('.arrow-path').forEach(arrow => {
+        arrow.classList.remove('animated');
+      });
+      
+      // Reset code lines
+      document.getElementById('code-line-1').style.backgroundColor = '';
+      document.getElementById('code-line-2').style.backgroundColor = '';
+    }
+
+    function highlightNode(nodeId, color = '#fbbf24') {
+      resetHighlights();
+      const node = document.getElementById(nodeId);
+      if (node) {
+        node.classList.add('active');
+        const shapes = node.querySelectorAll('ellipse, rect, polygon');
+        shapes.forEach(shape => {
+          shape.style.fill = color;
+        });
+      }
+    }
+
+    function highlightArrow(arrowId) {
+      const arrow = document.getElementById(arrowId);
+      if (arrow) {
+        arrow.classList.add('animated');
+      }
+    }
+
+    function highlightCodeLine(lineNum) {
+      document.getElementById('code-line-1').style.backgroundColor = lineNum === 1 ? 'rgba(251, 191, 36, 0.3)' : '';
+      document.getElementById('code-line-2').style.backgroundColor = lineNum === 2 ? 'rgba(251, 191, 36, 0.3)' : '';
+    }
+
+    function updateDisplay(i, status) {
+      document.getElementById('display-i').textContent = i !== null ? i : '-';
+      document.getElementById('display-iteration').textContent = iterationCount;
+      document.getElementById('display-status').textContent = status;
+    }
+
+    function setExplanation(text) {
+      document.getElementById('explanation-text').textContent = text;
+    }
+
+    function addConsoleOutput(text) {
+      const console = document.getElementById('console-output');
+      const entry = document.createElement('div');
+      entry.className = 'console-entry';
+      entry.textContent = `>>> ${text}`;
+      console.appendChild(entry);
+      console.scrollTop = console.scrollHeight;
+    }
+
+    function clearConsole() {
+      document.getElementById('console-output').innerHTML = '<div class="text-slate-500">>>> # Output sẽ hiển thị ở đây</div>';
+    }
+
+    function checkCondition() {
+      if (stepValue > 0) {
+        return currentI < endValue;
+      } else if (stepValue < 0) {
+        return currentI > endValue;
+      }
+      return false;
+    }
+
+    function runStep() {
+      if (!isRunning && stepIndex === 0) {
+        // First time - read inputs
+        updateCodeDisplay();
+        calculateTotalIterations();
+        generateProgressBar();
+        clearConsole();
+        isRunning = true;
+      }
+
+      stepIndex++;
+
+      switch (stepIndex) {
+        case STEP_START:
+          highlightNode('node-start', '#3b82f6');
+          highlightArrow('arrow-1');
+          updateDisplay(null, '▶️ Bắt đầu');
+          setExplanation('Chương trình bắt đầu thực thi vòng lặp for.');
+          break;
+
+        case STEP_INIT:
+          currentI = startValue;
+          highlightNode('node-init', '#8b5cf6');
+          highlightArrow('arrow-2');
+          highlightCodeLine(1);
+          updateDisplay(currentI, '📝 Khởi tạo i');
+          setExplanation(`Khởi tạo biến i = ${startValue}`);
+          break;
+
+        case STEP_CHECK:
+          highlightNode('node-check', '#f59e0b');
+          highlightCodeLine(1);
+          const conditionMet = checkCondition();
+          const comparison = stepValue > 0 ? '<' : '>';
+          
+          if (conditionMet) {
+            highlightArrow('arrow-3-true');
+            updateDisplay(currentI, '✅ Điều kiện đúng');
+            setExplanation(`Kiểm tra: ${currentI} ${comparison} ${endValue} → TRUE (tiếp tục lặp)`);
+          } else {
+            highlightArrow('arrow-3-false');
+            updateDisplay(currentI, '❌ Điều kiện sai');
+            setExplanation(`Kiểm tra: ${currentI} ${comparison} ${endValue} → FALSE (kết thúc lặp)`);
+            stepIndex = STEP_END - 1; // Will become STEP_END on next iteration
+          }
+          break;
+
+        case STEP_PRINT:
+          highlightNode('node-print', '#10b981');
+          highlightArrow('arrow-4');
+          highlightCodeLine(2);
+          updateDisplay(currentI, '🖨️ In giá trị');
+          setExplanation(`Thực hiện print(${currentI})`);
+          addConsoleOutput(currentI);
+          iterationCount++;
+          document.getElementById('display-iteration').textContent = iterationCount;
+          updateProgressBar(iterationCount - 1);
+          break;
+
+        case STEP_INCREMENT:
+          const oldI = currentI;
+          currentI += stepValue;
+          highlightNode('node-increment', '#ec4899');
+          highlightArrow('arrow-5');
+          highlightCodeLine(1);
+          updateDisplay(currentI, '➕ Tăng i');
+          const operation = stepValue >= 0 ? '+' : '';
+          setExplanation(`Tăng i: ${oldI} ${operation} ${stepValue} = ${currentI}`);
+          // Go back to check
+          stepIndex = STEP_CHECK - 1;
+          break;
+
+        case STEP_END:
+          highlightNode('node-end', '#ef4444');
+          highlightCodeLine(0);
+          updateDisplay(currentI, '🏁 Kết thúc');
+          setExplanation(`Vòng lặp kết thúc! Đã lặp ${iterationCount} lần.`);
+          updateProgressBar(loopValues.length); // All completed
+          isRunning = false;
+          pauseAuto();
+          break;
+      }
+    }
+
+    function runAuto() {
+      if (autoInterval) return;
+      
+      document.getElementById('btn-auto').classList.add('hidden');
+      document.getElementById('btn-pause').classList.remove('hidden');
+      
+      if (!isRunning && stepIndex === 0) {
+        runStep(); // Start first step
+      }
+      
+      autoInterval = setInterval(() => {
+        if (stepIndex >= STEP_END || !isRunning) {
+          pauseAuto();
+          return;
+        }
+        runStep();
+      }, 1000);
+    }
+
+    function pauseAuto() {
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+      }
+      document.getElementById('btn-auto').classList.remove('hidden');
+      document.getElementById('btn-pause').classList.add('hidden');
+    }
+
+    function resetAll() {
+      pauseAuto();
+      stepIndex = 0;
+      currentI = 0;
+      iterationCount = 0;
+      isRunning = false;
+      
+      updateCodeDisplay();
+      calculateTotalIterations();
+      generateProgressBar();
+      resetHighlights();
+      clearConsole();
+      
+      document.getElementById('display-i').textContent = '-';
+      document.getElementById('display-iteration').textContent = '0';
+      document.getElementById('display-status').textContent = 'Chờ bắt đầu';
+      setExplanation('Nhấn "Từng bước" hoặc "Tự động" để bắt đầu!');
+    }
+
+    // Input change handlers
+    document.getElementById('input-start').addEventListener('change', () => {
+      if (!isRunning) {
+        updateCodeDisplay();
+        calculateTotalIterations();
+        generateProgressBar();
+      }
+    });
+
+    document.getElementById('input-end').addEventListener('change', () => {
+      if (!isRunning) {
+        updateCodeDisplay();
+        calculateTotalIterations();
+        generateProgressBar();
+      }
+    });
+
+    document.getElementById('input-step').addEventListener('change', () => {
+      if (!isRunning) {
+        updateCodeDisplay();
+        calculateTotalIterations();
+        generateProgressBar();
+      }
+    });
+
+    // Element SDK integration
+    function onConfigChange(config) {
+      const title = config.main_title || defaultConfig.main_title;
+      document.getElementById('main-title').textContent = title;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["main_title", config.main_title || defaultConfig.main_title]
+      ]);
+    }
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Initialize on load
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d6f44a6175efd6c',t:'MTc3MjYxMDM5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

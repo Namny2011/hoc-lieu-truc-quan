@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minh Họa Vòng Lặp For</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #f7fafc, #edf2f7);
+            border: 3px solid #e2e8f0;
+        }
+        
+        .section h2 {
+            color: #2d3748;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(145deg, #4299e1, #3182ce);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+        }
+        
+        button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .reset-btn {
+            background: linear-gradient(145deg, #f56565, #e53e3e);
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
+        }
+        
+        .reset-btn:hover {
+            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4);
+        }
+        
+        .visualization {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .counter-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2b6cb0;
+            background: linear-gradient(145deg, #bee3f8, #90cdf4);
+            padding: 20px 30px;
+            border-radius: 20px;
+            border: 4px solid #3182ce;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(49, 130, 206, 0.2);
+        }
+        
+        .steps-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .step {
+            background: white;
+            padding: 15px 20px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border-left: 6px solid #4299e1;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .step.active {
+            background: linear-gradient(145deg, #fed7d7, #feb2b2);
+            border-left-color: #f56565;
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(245, 101, 101, 0.2);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 8px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .grid-cell {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #cbd5e0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: white;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .grid-cell.filled {
+            background: linear-gradient(145deg, #68d391, #48bb78);
+            color: white;
+            border-color: #38a169;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+        
+        .grid-cell.current {
+            background: linear-gradient(145deg, #fbb6ce, #f687b3);
+            border-color: #d53f8c;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .nested-info {
+            background: linear-gradient(145deg, #fef5e7, #fed7aa);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px solid #f6ad55;
+        }
+        
+        .nested-counters {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .counter-box {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 3px solid #4299e1;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.2);
+        }
+        
+        .counter-label {
+            font-size: 1rem;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+        
+        .counter-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2b6cb0;
+        }
+        
+        .explanation {
+            background: linear-gradient(145deg, #e6fffa, #b2f5ea);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px solid #4fd1c7;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 8px;
+        }
+        
+        .sum-visualization {
+            margin: 20px 0;
+        }
+        
+        .sum-counters {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .sum-equation {
+            background: linear-gradient(145deg, #fff5f5, #fed7d7);
+            border: 3px solid #f56565;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #c53030;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+        
+        .sum-steps {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 3px solid #4299e1;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .step-item {
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: linear-gradient(145deg, #f7fafc, #edf2f7);
+            border-radius: 10px;
+            border-left: 4px solid #4299e1;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .step-item.active {
+            background: linear-gradient(145deg, #fed7d7, #feb2b2);
+            border-left-color: #f56565;
+            transform: scale(1.02);
+        }
+        
+        .number-line {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .number-box {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #cbd5e0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            background: white;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .number-box.current {
+            background: linear-gradient(145deg, #fbb6ce, #f687b3);
+            border-color: #d53f8c;
+            transform: scale(1.2);
+            animation: bounce 0.6s ease-in-out;
+        }
+        
+        .number-box.added {
+            background: linear-gradient(145deg, #68d391, #48bb78);
+            color: white;
+            border-color: #38a169;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1.2); }
+            50% { transform: scale(1.4); }
+        }
+        
+        .pattern-visualization {
+            margin: 20px 0;
+        }
+        
+        .pattern-grid {
+            display: grid;
+            gap: 8px;
+            margin: 20px 0;
+            justify-content: center;
+            border: 3px solid #4299e1;
+            padding: 80px 20px 20px 20px;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #f7fafc, #edf2f7);
+            position: relative;
+        }
+        
+        .grid-with-labels {
+            display: inline-block;
+            position: relative;
+        }
+        
+        .row-labels {
+            position: absolute;
+            left: -80px;
+            top: 0px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .col-labels {
+            position: absolute;
+            top: -70px;
+            left: 0px;
+            display: flex;
+            gap: 2px;
+        }
+        
+        .label {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            background: linear-gradient(145deg, #fed7aa, #f6ad55);
+            border: 2px solid #ed8936;
+            border-radius: 10px;
+            color: #744210;
+        }
+        
+        .label.active {
+            background: linear-gradient(145deg, #fbb6ce, #f687b3);
+            border-color: #d53f8c;
+            color: #97266d;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
+        }
+        
+        .pattern-cell {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #cbd5e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: white;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .pattern-cell.current {
+            background: linear-gradient(145deg, #fbb6ce, #f687b3);
+            border-color: #d53f8c;
+            transform: scale(1.2);
+            animation: bounce 0.6s ease-in-out;
+            z-index: 10;
+        }
+        
+        .pattern-cell.filled {
+            background: linear-gradient(145deg, #68d391, #48bb78);
+            color: white;
+            border-color: #38a169;
+        }
+        
+        .pattern-cell.row-complete {
+            background: linear-gradient(145deg, #90cdf4, #63b3ed);
+            color: white;
+            border-color: #3182ce;
+        }
+        
+        .output-display {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            min-height: 150px;
+            border: 3px solid #4a5568;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+        
+        .output-line {
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .output-line.current {
+            background: rgba(245, 101, 101, 0.2);
+            padding: 5px;
+            border-radius: 5px;
+            border-left: 4px solid #f56565;
+        }
+        
+        .output-line.complete {
+            color: #68d391;
+        }
+        
+        .pattern-output {
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(145deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            border: 3px solid #e2e8f0;
+        }
+        
+        .chess-cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #4a5568;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .chess-cell.white {
+            background: #f7fafc;
+            color: #2d3748;
+        }
+        
+        .chess-cell.black {
+            background: #2d3748;
+            color: #f7fafc;
+        }
+        
+        .chess-cell.current {
+            transform: scale(1.2);
+            animation: bounce 0.6s ease-in-out;
+            z-index: 10;
+            border: 3px solid #f56565;
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.5);
+        }
+        
+        .chess-cell.filled {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Minh Họa Vòng Lặp For</h1>
+        
+        <!-- Vòng lặp đơn giản -->
+        <div class="section">
+            <h2><span class="emoji">🎯</span>Vòng Lặp For Đơn Giản</h2>
+            
+            <div class="explanation">
+                <strong>Vòng lặp for</strong> giống như đếm từ 1 đến 5! Chỉ số <strong>i</strong> sẽ tăng dần: 1, 2, 3, 4, 5
+            </div>
+            
+            <div class="controls">
+                <button onclick="startSimpleLoop()">▶️ Bắt Đầu Đếm</button>
+                <button onclick="stepSimpleLoop()">👆 Đếm Từng Bước</button>
+                <button onclick="resetSimpleLoop()" class="reset-btn">🔄 Đặt Lại</button>
+            </div>
+            
+            <div class="visualization">
+                <div class="counter-display" id="simpleCounter">0</div>
+                <div class="steps-container">
+                    <div class="step" id="step1">Bước 1: i = 1 (Bắt đầu đếm)</div>
+                    <div class="step" id="step2">Bước 2: i = 2 (Tiếp tục đếm)</div>
+                    <div class="step" id="step3">Bước 3: i = 3 (Đếm tiếp)</div>
+                    <div class="step" id="step4">Bước 4: i = 4 (Sắp xong rồi)</div>
+                    <div class="step" id="step5">Bước 5: i = 5 (Hoàn thành!)</div>
+                </div>
+            </div>
+            
+            <div class="grid-container" id="simpleGrid">
+                <div class="grid-cell">1</div>
+                <div class="grid-cell">2</div>
+                <div class="grid-cell">3</div>
+                <div class="grid-cell">4</div>
+                <div class="grid-cell">5</div>
+            </div>
+        </div>
+        
+        <!-- Tính tổng từ 1 đến n -->
+        <div class="section">
+            <h2><span class="emoji">🧮</span>Tính Tổng Từ 1 Đến N</h2>
+            
+            <div class="explanation">
+                <strong>Ví dụ Python:</strong> Tính tổng các số từ 1 đến n<br>
+                <code style="background: #f7fafc; padding: 8px; border-radius: 8px; font-family: monospace;">
+                    sum = 0<br>
+                    for i in range(1, n+1):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;sum = sum + i
+                </code>
+            </div>
+            
+            <div class="controls">
+                <label for="nValue" style="font-size: 1.2rem; font-weight: bold; margin-right: 10px;">Chọn n:</label>
+                <select id="nValue" style="padding: 8px; border-radius: 8px; border: 2px solid #4299e1; font-size: 1.1rem;">
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5" selected>5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                </select>
+                <button onclick="startSumLoop()">▶️ Bắt Đầu Tính</button>
+                <button onclick="stepSumLoop()">👆 Tính Từng Bước</button>
+                <button onclick="resetSumLoop()" class="reset-btn">🔄 Đặt Lại</button>
+            </div>
+            
+            <div class="sum-visualization">
+                <div class="sum-counters">
+                    <div class="counter-box">
+                        <div class="counter-label">Số hiện tại (i)</div>
+                        <div class="counter-value" id="sumI">0</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Tổng (sum)</div>
+                        <div class="counter-value" id="sumTotal">0</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Mục tiêu (n)</div>
+                        <div class="counter-value" id="sumN">5</div>
+                    </div>
+                </div>
+                
+                <div class="sum-equation" id="sumEquation">
+                    sum = 0
+                </div>
+                
+                <div class="sum-steps" id="sumSteps">
+                    <div class="step-item">Bước 1: Khởi tạo sum = 0</div>
+                </div>
+                
+                <div class="number-line" id="numberLine">
+                    <!-- Numbers will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- In ra n hàng với vòng lặp lồng nhau -->
+        <div class="section">
+            <h2><span class="emoji">📋</span>In Ra N Hàng Với Vòng Lặp Lồng Nhau</h2>
+            
+            <div class="explanation">
+                <strong>Ví dụ Python:</strong> In ra n hàng, mỗi hàng có các số từ 1 đến n<br>
+                <code style="background: #f7fafc; padding: 8px; border-radius: 8px; font-family: monospace;">
+                    for i in range(1, n+1):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for j in range(1, n+1):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(j, end=" ")<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;print()  # Xuống hàng
+                </code>
+            </div>
+            
+            <div class="controls">
+                <label for="patternN" style="font-size: 1.2rem; font-weight: bold; margin-right: 10px;">Chọn n:</label>
+                <select id="patternN" style="padding: 8px; border-radius: 8px; border: 2px solid #4299e1; font-size: 1.1rem;">
+                    <option value="3">3</option>
+                    <option value="4" selected>4</option>
+                    <option value="5">5</option>
+                </select>
+                <button onclick="startPatternLoop()">▶️ Bắt Đầu In</button>
+                <button onclick="stepPatternLoop()">👆 In Từng Số</button>
+                <button onclick="resetPatternLoop()" class="reset-btn">🔄 Đặt Lại</button>
+            </div>
+            
+            <div class="pattern-visualization">
+                <div class="nested-counters">
+                    <div class="counter-box">
+                        <div class="counter-label">Hàng hiện tại (i)</div>
+                        <div class="counter-value" id="patternI">0</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Cột hiện tại (j)</div>
+                        <div class="counter-value" id="patternJ">0</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Kích thước (n)</div>
+                        <div class="counter-value" id="patternN_display">4</div>
+                    </div>
+                </div>
+                
+                <div class="nested-info">
+                    <div id="patternExplanation">Nhấn "Bắt Đầu In" để xem cách in từng hàng!</div>
+                </div>
+                
+                <div class="pattern-grid">
+                    <div class="grid-with-labels">
+                        <div class="col-labels" id="colLabels">
+                            <!-- Column labels will be generated here -->
+                        </div>
+                        <div class="row-labels" id="rowLabels">
+                            <!-- Row labels will be generated here -->
+                        </div>
+                        <div id="patternGrid" style="display: grid; gap: 8px;">
+                            <!-- Grid will be generated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pattern-output">
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">📄 Kết Quả In Ra:</h3>
+                    <div class="output-display" id="outputDisplay">
+                        <div class="output-line">Chưa bắt đầu...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bài tập: In tam giác số -->
+        <div class="section">
+            <h2><span class="emoji">🔺</span>Bài Tập: In Tam Giác Số</h2>
+            
+            <div class="explanation">
+                <strong>Ví dụ Python:</strong> In tam giác số với n hàng<br>
+                <code style="background: #f7fafc; padding: 8px; border-radius: 8px; font-family: monospace;">
+                    for i in range(1, n+1):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for j in range(1, i+1):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(j, end=" ")<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;print()  # Xuống hàng
+                </code>
+            </div>
+            
+            <div class="controls">
+                <label for="triangleN" style="font-size: 1.2rem; font-weight: bold; margin-right: 10px;">Chọn n:</label>
+                <select id="triangleN" style="padding: 8px; border-radius: 8px; border: 2px solid #4299e1; font-size: 1.1rem;">
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5" selected>5</option>
+                </select>
+                <button onclick="startTriangleLoop()">▶️ Bắt Đầu In</button>
+                <button onclick="stepTriangleLoop()">👆 In Từng Số</button>
+                <button onclick="resetTriangleLoop()" class="reset-btn">🔄 Đặt Lại</button>
+            </div>
+            
+            <div class="pattern-visualization">
+                <div class="nested-counters">
+                    <div class="counter-box">
+                        <div class="counter-label">Hàng hiện tại (i)</div>
+                        <div class="counter-value" id="triangleI">0</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Số hiện tại (j)</div>
+                        <div class="counter-value" id="triangleJ">0</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Điều kiện (j ≤ i)</div>
+                        <div class="counter-value" id="triangleCondition">-</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Kích thước (n)</div>
+                        <div class="counter-value" id="triangleN_display">5</div>
+                    </div>
+                </div>
+                
+                <div class="nested-info">
+                    <div id="triangleExplanation">Nhấn "Bắt Đầu In" để xem cách tạo tam giác số!</div>
+                </div>
+                
+                <div class="pattern-grid" style="padding: 100px 20px 20px 100px;">
+                    <div class="grid-with-labels">
+                        <div class="col-labels" id="triangleColLabels" style="top: -90px; gap: 4px;">
+                            <!-- Column labels will be generated here -->
+                        </div>
+                        <div class="row-labels" id="triangleRowLabels" style="left: -100px;">
+                            <!-- Row labels will be generated here -->
+                        </div>
+                        <div id="triangleGrid" style="display: grid; gap: 8px;">
+                            <!-- Triangle grid will be generated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pattern-output">
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">🔺 Kết Quả Tam Giác:</h3>
+                    <div class="output-display" id="triangleOutputDisplay">
+                        <div class="output-line">Chưa bắt đầu...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bài tập: Bản cờ vua -->
+        <div class="section">
+            <h2><span class="emoji">♟️</span>Bài Tập: Bản Cờ Vua</h2>
+            
+            <div class="explanation">
+                <strong>Ví dụ Python:</strong> Tạo bản cờ vua n×n với ô đầu tiên là trắng (W)<br>
+                <code style="background: #f7fafc; padding: 8px; border-radius: 8px; font-family: monospace;">
+                    for i in range(1, n+1):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for j in range(1, n+1):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (i + j) % 2 == 0:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("W", end="")<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("B", end="")<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;print()  # Xuống hàng
+                </code><br>
+                <strong>💡 Giải thích:</strong> Dùng <code>(i + j)</code> để ô (1,1) có tổng = 2 (chẵn) → Trắng
+            </div>
+            
+            <div class="controls">
+                <label for="chessN" style="font-size: 1.2rem; font-weight: bold; margin-right: 10px;">Chọn n:</label>
+                <select id="chessN" style="padding: 8px; border-radius: 8px; border: 2px solid #4299e1; font-size: 1.1rem;">
+                    <option value="4" selected>4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="8">8</option>
+                </select>
+                <button onclick="startChessLoop()">▶️ Bắt Đầu Vẽ</button>
+                <button onclick="stepChessLoop()">👆 Vẽ Từng Ô</button>
+                <button onclick="resetChessLoop()" class="reset-btn">🔄 Đặt Lại</button>
+            </div>
+            
+            <div class="pattern-visualization">
+                <div class="nested-counters">
+                    <div class="counter-box">
+                        <div class="counter-label">Hàng hiện tại (i)</div>
+                        <div class="counter-value" id="chessI">0</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Cột hiện tại (j)</div>
+                        <div class="counter-value" id="chessJ">0</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Tổng (i + j)</div>
+                        <div class="counter-value" id="chessSum">0</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Màu</div>
+                        <div class="counter-value" id="chessColor">-</div>
+                    </div>
+                    <div class="counter-box">
+                        <div class="counter-label">Kích thước (n)</div>
+                        <div class="counter-value" id="chessN_display">4</div>
+                    </div>
+                </div>
+                
+                <div class="nested-info">
+                    <div id="chessExplanation">Nhấn "Bắt Đầu Vẽ" để xem cách tạo bản cờ vua!</div>
+                </div>
+                
+                <div class="pattern-grid" style="padding: 100px 20px 20px 100px;">
+                    <div class="grid-with-labels">
+                        <div class="col-labels" id="chessColLabels" style="top: -90px; gap: 4px;">
+                            <!-- Column labels will be generated here -->
+                        </div>
+                        <div class="row-labels" id="chessRowLabels" style="left: -100px;">
+                            <!-- Row labels will be generated here -->
+                        </div>
+                        <div id="chessGrid" style="display: grid; gap: 2px;">
+                            <!-- Chess grid will be generated here -->
+                        </div>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+
+        <!-- Vòng lặp lồng nhau cơ bản -->
+        <div class="section">
+            <h2><span class="emoji">🎪</span>Vòng Lặp For Lồng Nhau Cơ Bản</h2>
+            
+            <div class="explanation">
+                <strong>Vòng lặp lồng nhau</strong> giống như xếp hàng và cột! <strong>i</strong> là hàng (từ trên xuống), <strong>j</strong> là cột (từ trái qua phải)
+            </div>
+            
+            <div class="controls">
+                <button onclick="startNestedLoop()">▶️ Bắt Đầu Xếp</button>
+                <button onclick="stepNestedLoop()">👆 Xếp Từng Ô</button>
+                <button onclick="resetNestedLoop()" class="reset-btn">🔄 Đặt Lại</button>
+            </div>
+            
+            <div class="nested-counters">
+                <div class="counter-box">
+                    <div class="counter-label">Hàng (i)</div>
+                    <div class="counter-value" id="nestedI">0</div>
+                </div>
+                <div class="counter-box">
+                    <div class="counter-label">Cột (j)</div>
+                    <div class="counter-value" id="nestedJ">0</div>
+                </div>
+            </div>
+            
+            <div class="nested-info">
+                <div id="nestedExplanation">Nhấn "Bắt Đầu Xếp" để xem i và j hoạt động như thế nào!</div>
+            </div>
+            
+            <div class="grid-container" id="nestedGrid" style="grid-template-columns: repeat(3, 80px);">
+                <div class="grid-cell" data-i="1" data-j="1">1,1</div>
+                <div class="grid-cell" data-i="1" data-j="2">1,2</div>
+                <div class="grid-cell" data-i="1" data-j="3">1,3</div>
+                <div class="grid-cell" data-i="2" data-j="1">2,1</div>
+                <div class="grid-cell" data-i="2" data-j="2">2,2</div>
+                <div class="grid-cell" data-i="2" data-j="3">2,3</div>
+                <div class="grid-cell" data-i="3" data-j="1">3,1</div>
+                <div class="grid-cell" data-i="3" data-j="2">3,2</div>
+                <div class="grid-cell" data-i="3" data-j="3">3,3</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Vòng lặp đơn giản
+        let simpleI = 0;
+        let simpleInterval;
+        
+        function startSimpleLoop() {
+            resetSimpleLoop();
+            simpleInterval = setInterval(() => {
+                if (simpleI < 5) {
+                    stepSimpleLoop();
+                } else {
+                    clearInterval(simpleInterval);
+                }
+            }, 1000);
+        }
+        
+        function stepSimpleLoop() {
+            if (simpleI < 5) {
+                simpleI++;
+                document.getElementById('simpleCounter').textContent = simpleI;
+                
+                // Highlight current step
+                document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+                document.getElementById(`step${simpleI}`).classList.add('active');
+                
+                // Fill grid cell
+                const cells = document.querySelectorAll('#simpleGrid .grid-cell');
+                cells[simpleI - 1].classList.add('filled');
+            }
+        }
+        
+        function resetSimpleLoop() {
+            clearInterval(simpleInterval);
+            simpleI = 0;
+            document.getElementById('simpleCounter').textContent = '0';
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+            document.querySelectorAll('#simpleGrid .grid-cell').forEach(cell => {
+                cell.classList.remove('filled', 'current');
+            });
+        }
+        
+        // Vòng lặp lồng nhau
+        let nestedI = 1;
+        let nestedJ = 1;
+        let nestedInterval;
+        let nestedStarted = false;
+        
+        function startNestedLoop() {
+            resetNestedLoop();
+            nestedStarted = true;
+            nestedInterval = setInterval(() => {
+                if (nestedI <= 3) {
+                    stepNestedLoop();
+                } else {
+                    clearInterval(nestedInterval);
+                }
+            }, 1200);
+        }
+        
+        function stepNestedLoop() {
+            if (!nestedStarted) {
+                nestedStarted = true;
+            }
+            
+            if (nestedI <= 3) {
+                // Update display
+                document.getElementById('nestedI').textContent = nestedI;
+                document.getElementById('nestedJ').textContent = nestedJ;
+                
+                // Update explanation
+                const explanation = document.getElementById('nestedExplanation');
+                explanation.innerHTML = `
+                    🎯 Đang ở <strong>Hàng ${nestedI}, Cột ${nestedJ}</strong><br>
+                    📝 Giải thích: i=${nestedI} (hàng thứ ${nestedI}), j=${nestedJ} (cột thứ ${nestedJ})
+                `;
+                
+                // Highlight current cell
+                document.querySelectorAll('#nestedGrid .grid-cell').forEach(cell => {
+                    cell.classList.remove('current', 'filled');
+                });
+                
+                const currentCell = document.querySelector(`#nestedGrid .grid-cell[data-i="${nestedI}"][data-j="${nestedJ}"]`);
+                if (currentCell) {
+                    currentCell.classList.add('current');
+                    
+                    setTimeout(() => {
+                        currentCell.classList.remove('current');
+                        currentCell.classList.add('filled');
+                    }, 800);
+                }
+                
+                // Move to next position
+                nestedJ++;
+                if (nestedJ > 3) {
+                    nestedJ = 1;
+                    nestedI++;
+                }
+            }
+        }
+        
+        function resetNestedLoop() {
+            clearInterval(nestedInterval);
+            nestedI = 1;
+            nestedJ = 1;
+            nestedStarted = false;
+            
+            document.getElementById('nestedI').textContent = '0';
+            document.getElementById('nestedJ').textContent = '0';
+            document.getElementById('nestedExplanation').textContent = 'Nhấn "Bắt Đầu Xếp" để xem i và j hoạt động như thế nào!';
+            
+            document.querySelectorAll('#nestedGrid .grid-cell').forEach(cell => {
+                cell.classList.remove('current', 'filled');
+            });
+        }
+        
+        // Tính tổng từ 1 đến n
+        let sumI = 0;
+        let sumTotal = 0;
+        let sumN = 5;
+        let sumInterval;
+        let sumStepCount = 0;
+        
+        function startSumLoop() {
+            resetSumLoop();
+            sumInterval = setInterval(() => {
+                if (sumI < sumN) {
+                    stepSumLoop();
+                } else {
+                    clearInterval(sumInterval);
+                }
+            }, 1500);
+        }
+        
+        function stepSumLoop() {
+            if (sumI < sumN) {
+                sumI++;
+                sumStepCount++;
+                
+                // Update displays
+                document.getElementById('sumI').textContent = sumI;
+                document.getElementById('sumTotal').textContent = sumTotal + sumI;
+                
+                // Highlight current number
+                const numberBoxes = document.querySelectorAll('.number-box');
+                numberBoxes.forEach(box => box.classList.remove('current'));
+                if (numberBoxes[sumI - 1]) {
+                    numberBoxes[sumI - 1].classList.add('current');
+                }
+                
+                // Update equation
+                const equation = document.getElementById('sumEquation');
+                equation.innerHTML = `sum = ${sumTotal} + ${sumI} = ${sumTotal + sumI}`;
+                
+                // Add step
+                const stepsContainer = document.getElementById('sumSteps');
+                const newStep = document.createElement('div');
+                newStep.className = 'step-item active';
+                newStep.innerHTML = `Bước ${sumStepCount + 1}: i = ${sumI}, sum = ${sumTotal} + ${sumI} = ${sumTotal + sumI}`;
+                stepsContainer.appendChild(newStep);
+                
+                // Remove active from previous steps
+                const allSteps = stepsContainer.querySelectorAll('.step-item');
+                allSteps.forEach((step, index) => {
+                    if (index < allSteps.length - 1) {
+                        step.classList.remove('active');
+                    }
+                });
+                
+                // Update sum
+                sumTotal += sumI;
+                
+                setTimeout(() => {
+                    if (numberBoxes[sumI - 1]) {
+                        numberBoxes[sumI - 1].classList.remove('current');
+                        numberBoxes[sumI - 1].classList.add('added');
+                    }
+                    document.getElementById('sumTotal').textContent = sumTotal;
+                }, 800);
+                
+                // Final step
+                if (sumI === sumN) {
+                    setTimeout(() => {
+                        const finalStep = document.createElement('div');
+                        finalStep.className = 'step-item active';
+                        finalStep.innerHTML = `🎉 Hoàn thành! Tổng từ 1 đến ${sumN} = ${sumTotal}`;
+                        stepsContainer.appendChild(finalStep);
+                        
+                        // Remove active from previous step
+                        const allSteps = stepsContainer.querySelectorAll('.step-item');
+                        if (allSteps.length > 1) {
+                            allSteps[allSteps.length - 2].classList.remove('active');
+                        }
+                    }, 1000);
+                }
+            }
+        }
+        
+        function resetSumLoop() {
+            clearInterval(sumInterval);
+            sumI = 0;
+            sumTotal = 0;
+            sumStepCount = 0;
+            sumN = parseInt(document.getElementById('nValue').value);
+            
+            document.getElementById('sumI').textContent = '0';
+            document.getElementById('sumTotal').textContent = '0';
+            document.getElementById('sumN').textContent = sumN;
+            document.getElementById('sumEquation').textContent = 'sum = 0';
+            
+            // Reset steps
+            const stepsContainer = document.getElementById('sumSteps');
+            stepsContainer.innerHTML = '<div class="step-item">Bước 1: Khởi tạo sum = 0</div>';
+            
+            // Generate number line
+            const numberLine = document.getElementById('numberLine');
+            numberLine.innerHTML = '';
+            for (let i = 1; i <= sumN; i++) {
+                const numberBox = document.createElement('div');
+                numberBox.className = 'number-box';
+                numberBox.textContent = i;
+                numberLine.appendChild(numberBox);
+            }
+        }
+        
+        // Pattern loop variables
+        let patternI = 1;
+        let patternJ = 1;
+        let patternN = 4;
+        let patternInterval;
+        let patternStarted = false;
+        let currentOutputLine = '';
+        let outputLines = [];
+        
+        function startPatternLoop() {
+            resetPatternLoop();
+            patternStarted = true;
+            patternInterval = setInterval(() => {
+                if (patternI <= patternN) {
+                    stepPatternLoop();
+                } else {
+                    clearInterval(patternInterval);
+                }
+            }, 1000);
+        }
+        
+        function stepPatternLoop() {
+            if (!patternStarted) {
+                patternStarted = true;
+            }
+            
+            if (patternI <= patternN) {
+                // Update displays
+                document.getElementById('patternI').textContent = patternI;
+                document.getElementById('patternJ').textContent = patternJ;
+                
+                // Update explanation
+                const explanation = document.getElementById('patternExplanation');
+                explanation.innerHTML = `
+                    🎯 Đang in <strong>Hàng ${patternI}, Cột ${patternJ}</strong><br>
+                    📝 Vòng lặp ngoài: i=${patternI} (hàng thứ ${patternI})<br>
+                    📝 Vòng lặp trong: j=${patternJ} (in số ${patternJ})
+                `;
+                
+                // Highlight current cell
+                const cells = document.querySelectorAll('.pattern-cell');
+                cells.forEach(cell => cell.classList.remove('current'));
+                
+                // Highlight current row and column labels
+                const rowLabels = document.querySelectorAll('.row-labels .label');
+                const colLabels = document.querySelectorAll('.col-labels .label');
+                rowLabels.forEach(label => label.classList.remove('active'));
+                colLabels.forEach(label => label.classList.remove('active'));
+                
+                if (rowLabels[patternI - 1]) rowLabels[patternI - 1].classList.add('active');
+                if (colLabels[patternJ - 1]) colLabels[patternJ - 1].classList.add('active');
+                
+                const currentCell = document.querySelector(`.pattern-cell[data-i="${patternI}"][data-j="${patternJ}"]`);
+                if (currentCell) {
+                    currentCell.classList.add('current');
+                    
+                    setTimeout(() => {
+                        currentCell.classList.remove('current');
+                        currentCell.classList.add('filled');
+                        currentCell.style.opacity = '1'; // Make fully visible
+                    }, 600);
+                }
+                
+                // Update output
+                currentOutputLine += patternJ + ' ';
+                updateOutputDisplay();
+                
+                // Move to next position
+                patternJ++;
+                if (patternJ > patternN) {
+                    // Complete current row
+                    setTimeout(() => {
+                        // Mark row as complete
+                        for (let j = 1; j <= patternN; j++) {
+                            const cell = document.querySelector(`.pattern-cell[data-i="${patternI}"][data-j="${j}"]`);
+                            if (cell) {
+                                cell.classList.remove('filled');
+                                cell.classList.add('row-complete');
+                            }
+                        }
+                        
+                        // Finalize output line
+                        outputLines.push(currentOutputLine.trim());
+                        currentOutputLine = '';
+                        updateOutputDisplay();
+                    }, 800);
+                    
+                    patternJ = 1;
+                    patternI++;
+                }
+            }
+        }
+        
+        function updateOutputDisplay() {
+            const outputDisplay = document.getElementById('outputDisplay');
+            let html = '';
+            
+            // Show completed lines
+            outputLines.forEach((line, index) => {
+                html += `<div class="output-line complete">Hàng ${index + 1}: ${line}</div>`;
+            });
+            
+            // Show current line being built
+            if (currentOutputLine && patternI <= patternN) {
+                html += `<div class="output-line current">Hàng ${patternI}: ${currentOutputLine}</div>`;
+            }
+            
+            // Show completion message
+            if (patternI > patternN && outputLines.length === patternN) {
+                html += `<div class="output-line" style="color: #68d391; font-weight: bold; margin-top: 10px;">🎉 Hoàn thành! Đã in ${patternN} hàng!</div>`;
+            }
+            
+            if (html === '') {
+                html = '<div class="output-line">Chưa bắt đầu...</div>';
+            }
+            
+            outputDisplay.innerHTML = html;
+            outputDisplay.scrollTop = outputDisplay.scrollHeight;
+        }
+        
+        function resetPatternLoop() {
+            clearInterval(patternInterval);
+            patternI = 1;
+            patternJ = 1;
+            patternStarted = false;
+            currentOutputLine = '';
+            outputLines = [];
+            patternN = parseInt(document.getElementById('patternN').value);
+            
+            document.getElementById('patternI').textContent = '0';
+            document.getElementById('patternJ').textContent = '0';
+            document.getElementById('patternN_display').textContent = patternN;
+            document.getElementById('patternExplanation').textContent = 'Nhấn "Bắt Đầu In" để xem cách in từng hàng!';
+            
+            // Reset label highlights
+            document.querySelectorAll('.row-labels .label').forEach(label => label.classList.remove('active'));
+            document.querySelectorAll('.col-labels .label').forEach(label => label.classList.remove('active'));
+            
+            // Generate row labels (i values)
+            const rowLabels = document.getElementById('rowLabels');
+            rowLabels.innerHTML = '';
+            for (let i = 1; i <= patternN; i++) {
+                const label = document.createElement('div');
+                label.className = 'label';
+                label.textContent = `i=${i}`;
+                rowLabels.appendChild(label);
+            }
+            
+            // Generate column labels (j values)
+            const colLabels = document.getElementById('colLabels');
+            colLabels.innerHTML = '';
+            for (let j = 1; j <= patternN; j++) {
+                const label = document.createElement('div');
+                label.className = 'label';
+                label.textContent = `j=${j}`;
+                colLabels.appendChild(label);
+            }
+            
+            // Generate pattern grid
+            const patternGrid = document.getElementById('patternGrid');
+            patternGrid.style.gridTemplateColumns = `repeat(${patternN}, 50px)`;
+            patternGrid.innerHTML = '';
+            
+            for (let i = 1; i <= patternN; i++) {
+                for (let j = 1; j <= patternN; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'pattern-cell';
+                    cell.textContent = j;
+                    cell.setAttribute('data-i', i);
+                    cell.setAttribute('data-j', j);
+                    patternGrid.appendChild(cell);
+                }
+            }
+            
+            updateOutputDisplay();
+        }
+
+        // Triangle loop variables
+        let triangleI = 1;
+        let triangleJ = 1;
+        let triangleN = 5;
+        let triangleInterval;
+        let triangleStarted = false;
+        let triangleCurrentOutputLine = '';
+        let triangleOutputLines = [];
+        
+        function startTriangleLoop() {
+            resetTriangleLoop();
+            triangleStarted = true;
+            triangleInterval = setInterval(() => {
+                if (triangleI <= triangleN) {
+                    stepTriangleLoop();
+                } else {
+                    clearInterval(triangleInterval);
+                }
+            }, 1000);
+        }
+        
+        function stepTriangleLoop() {
+            if (!triangleStarted) {
+                triangleStarted = true;
+            }
+            
+            if (triangleI <= triangleN) {
+                // Update displays
+                document.getElementById('triangleI').textContent = triangleI;
+                document.getElementById('triangleJ').textContent = triangleJ;
+                document.getElementById('triangleCondition').textContent = `${triangleJ} ≤ ${triangleI}`;
+                
+                // Update explanation
+                const explanation = document.getElementById('triangleExplanation');
+                explanation.innerHTML = `
+                    🔺 Đang in <strong>Hàng ${triangleI}, Số ${triangleJ}</strong><br>
+                    📝 Vòng lặp ngoài: i=${triangleI} (hàng thứ ${triangleI})<br>
+                    📝 Vòng lặp trong: j=${triangleJ} (in số ${triangleJ})<br>
+                    ✅ Điều kiện: j=${triangleJ} ≤ i=${triangleI} → ${triangleJ <= triangleI ? 'Đúng' : 'Sai'}
+                `;
+                
+                // Highlight current cell
+                const cells = document.querySelectorAll('.triangle-cell');
+                cells.forEach(cell => cell.classList.remove('current'));
+                
+                // Highlight current row and column labels
+                const rowLabels = document.querySelectorAll('#triangleRowLabels .label');
+                const colLabels = document.querySelectorAll('#triangleColLabels .label');
+                rowLabels.forEach(label => label.classList.remove('active'));
+                colLabels.forEach(label => label.classList.remove('active'));
+                
+                if (rowLabels[triangleI - 1]) rowLabels[triangleI - 1].classList.add('active');
+                if (colLabels[triangleJ - 1]) colLabels[triangleJ - 1].classList.add('active');
+                
+                const currentCell = document.querySelector(`.triangle-cell[data-i="${triangleI}"][data-j="${triangleJ}"]`);
+                if (currentCell) {
+                    currentCell.classList.add('current');
+                    
+                    setTimeout(() => {
+                        currentCell.classList.remove('current');
+                        currentCell.classList.add('filled');
+                        currentCell.style.opacity = '1'; // Make fully visible
+                    }, 600);
+                }
+                
+                // Update output
+                triangleCurrentOutputLine += triangleJ + ' ';
+                updateTriangleOutputDisplay();
+                
+                // Move to next position
+                triangleJ++;
+                if (triangleJ > triangleI) {
+                    // Complete current row
+                    setTimeout(() => {
+                        // Mark row as complete
+                        for (let j = 1; j <= triangleI; j++) {
+                            const cell = document.querySelector(`.triangle-cell[data-i="${triangleI}"][data-j="${j}"]`);
+                            if (cell) {
+                                cell.classList.remove('filled');
+                                cell.classList.add('row-complete');
+                            }
+                        }
+                        
+                        // Finalize output line
+                        triangleOutputLines.push(triangleCurrentOutputLine.trim());
+                        triangleCurrentOutputLine = '';
+                        updateTriangleOutputDisplay();
+                    }, 800);
+                    
+                    triangleJ = 1;
+                    triangleI++;
+                }
+            }
+        }
+        
+        function updateTriangleOutputDisplay() {
+            const outputDisplay = document.getElementById('triangleOutputDisplay');
+            let html = '';
+            
+            // Show completed lines
+            triangleOutputLines.forEach((line, index) => {
+                html += `<div class="output-line complete">Hàng ${index + 1}: ${line}</div>`;
+            });
+            
+            // Show current line being built
+            if (triangleCurrentOutputLine && triangleI <= triangleN) {
+                html += `<div class="output-line current">Hàng ${triangleI}: ${triangleCurrentOutputLine}</div>`;
+            }
+            
+            // Show completion message
+            if (triangleI > triangleN && triangleOutputLines.length === triangleN) {
+                html += `<div class="output-line" style="color: #68d391; font-weight: bold; margin-top: 10px;">🎉 Hoàn thành! Đã tạo tam giác ${triangleN} hàng!</div>`;
+            }
+            
+            if (html === '') {
+                html = '<div class="output-line">Chưa bắt đầu...</div>';
+            }
+            
+            outputDisplay.innerHTML = html;
+            outputDisplay.scrollTop = outputDisplay.scrollHeight;
+        }
+        
+        function resetTriangleLoop() {
+            clearInterval(triangleInterval);
+            triangleI = 1;
+            triangleJ = 1;
+            triangleStarted = false;
+            triangleCurrentOutputLine = '';
+            triangleOutputLines = [];
+            triangleN = parseInt(document.getElementById('triangleN').value);
+            
+            document.getElementById('triangleI').textContent = '0';
+            document.getElementById('triangleJ').textContent = '0';
+            document.getElementById('triangleCondition').textContent = '-';
+            document.getElementById('triangleN_display').textContent = triangleN;
+            document.getElementById('triangleExplanation').textContent = 'Nhấn "Bắt Đầu In" để xem cách tạo tam giác số!';
+            
+            // Reset label highlights
+            document.querySelectorAll('#triangleRowLabels .label').forEach(label => label.classList.remove('active'));
+            document.querySelectorAll('#triangleColLabels .label').forEach(label => label.classList.remove('active'));
+            
+            // Generate row labels (i values)
+            const rowLabels = document.getElementById('triangleRowLabels');
+            rowLabels.innerHTML = '';
+            for (let i = 1; i <= triangleN; i++) {
+                const label = document.createElement('div');
+                label.className = 'label';
+                label.textContent = `i=${i}`;
+                rowLabels.appendChild(label);
+            }
+            
+            // Generate column labels (j values)
+            const colLabels = document.getElementById('triangleColLabels');
+            colLabels.innerHTML = '';
+            for (let j = 1; j <= triangleN; j++) {
+                const label = document.createElement('div');
+                label.className = 'label';
+                label.textContent = `j=${j}`;
+                colLabels.appendChild(label);
+            }
+            
+            // Generate triangle grid
+            const triangleGrid = document.getElementById('triangleGrid');
+            triangleGrid.style.gridTemplateColumns = `repeat(${triangleN}, 50px)`;
+            triangleGrid.innerHTML = '';
+            
+            for (let i = 1; i <= triangleN; i++) {
+                for (let j = 1; j <= triangleN; j++) {
+                    const cell = document.createElement('div');
+                    if (j <= i) {
+                        cell.className = 'pattern-cell triangle-cell';
+                        cell.textContent = j;
+                        cell.setAttribute('data-i', i);
+                        cell.setAttribute('data-j', j);
+                    } else {
+                        cell.className = 'pattern-cell triangle-empty';
+                        cell.style.visibility = 'hidden';
+                    }
+                    triangleGrid.appendChild(cell);
+                }
+            }
+            
+            updateTriangleOutputDisplay();
+        }
+        
+        // Initialize sum visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            resetSumLoop();
+            resetPatternLoop();
+            resetTriangleLoop();
+            resetChessLoop();
+            
+            // Update when n value changes
+            document.getElementById('nValue').addEventListener('change', function() {
+                resetSumLoop();
+            });
+            
+            // Update when pattern n value changes
+            document.getElementById('patternN').addEventListener('change', function() {
+                resetPatternLoop();
+            });
+            
+            // Update when triangle n value changes
+            document.getElementById('triangleN').addEventListener('change', function() {
+                resetTriangleLoop();
+            });
+            
+            // Update when chess n value changes
+            document.getElementById('chessN').addEventListener('change', function() {
+                resetChessLoop();
+            });
+        });
+        
+        // Chess board loop variables
+        let chessI = 1;
+        let chessJ = 1;
+        let chessN = 4;
+        let chessInterval;
+        let chessStarted = false;
+        let chessCurrentOutputLine = '';
+        let chessOutputLines = [];
+        
+        function startChessLoop() {
+            resetChessLoop();
+            chessStarted = true;
+            chessInterval = setInterval(() => {
+                if (chessI <= chessN) {
+                    stepChessLoop();
+                } else {
+                    clearInterval(chessInterval);
+                }
+            }, 800);
+        }
+        
+        function stepChessLoop() {
+            if (!chessStarted) {
+                chessStarted = true;
+            }
+            
+            if (chessI <= chessN) {
+                // Calculate color based on (i + j) % 2
+                const sum = chessI + chessJ;
+                const isWhite = sum % 2 === 0;
+                const color = isWhite ? 'W' : 'B';
+                const colorName = isWhite ? 'Trắng' : 'Đen';
+                
+                // Update displays
+                document.getElementById('chessI').textContent = chessI;
+                document.getElementById('chessJ').textContent = chessJ;
+                document.getElementById('chessSum').textContent = sum;
+                document.getElementById('chessColor').textContent = color;
+                
+                // Update explanation
+                const explanation = document.getElementById('chessExplanation');
+                explanation.innerHTML = `
+                    ♟️ Đang vẽ <strong>Hàng ${chessI}, Cột ${chessJ}</strong><br>
+                    📝 Vòng lặp ngoài: i=${chessI} (hàng thứ ${chessI})<br>
+                    📝 Vòng lặp trong: j=${chessJ} (cột thứ ${chessJ})<br>
+                    🧮 Tính toán: (i + j) = (${chessI} + ${chessJ}) = ${sum}<br>
+                    🎨 Màu: ${sum} % 2 = ${sum % 2} → ${sum % 2 === 0 ? 'Chẵn' : 'Lẻ'} → <strong>${colorName} (${color})</strong>
+                `;
+                
+                // Highlight current cell
+                const cells = document.querySelectorAll('.chess-cell');
+                cells.forEach(cell => cell.classList.remove('current'));
+                
+                // Highlight current row and column labels
+                const rowLabels = document.querySelectorAll('#chessRowLabels .label');
+                const colLabels = document.querySelectorAll('#chessColLabels .label');
+                rowLabels.forEach(label => label.classList.remove('active'));
+                colLabels.forEach(label => label.classList.remove('active'));
+                
+                if (rowLabels[chessI - 1]) rowLabels[chessI - 1].classList.add('active');
+                if (colLabels[chessJ - 1]) colLabels[chessJ - 1].classList.add('active');
+                
+                const currentCell = document.querySelector(`.chess-cell[data-i="${chessI}"][data-j="${chessJ}"]`);
+                if (currentCell) {
+                    currentCell.classList.add('current');
+                    
+                    setTimeout(() => {
+                        currentCell.classList.remove('current');
+                        currentCell.classList.add('filled');
+                        currentCell.style.opacity = '1'; // Make fully visible
+                        
+                        // Update the cell's display to match the calculated color
+                        currentCell.textContent = color;
+                        currentCell.className = `chess-cell ${isWhite ? 'white' : 'black'} filled`;
+                    }, 600);
+                }
+                
+                // Update output
+                chessCurrentOutputLine += color;
+                updateChessOutputDisplay();
+                
+                // Move to next position
+                chessJ++;
+                if (chessJ > chessN) {
+                    // Complete current row
+                    setTimeout(() => {
+                        // Finalize output line
+                        chessOutputLines.push(chessCurrentOutputLine);
+                        chessCurrentOutputLine = '';
+                        updateChessOutputDisplay();
+                    }, 800);
+                    
+                    chessJ = 1;
+                    chessI++;
+                }
+            }
+        }
+        
+        function updateChessOutputDisplay() {
+            const outputDisplay = document.getElementById('chessOutputDisplay');
+            let html = '';
+            
+            // Show completed lines
+            chessOutputLines.forEach((line, index) => {
+                html += `<div class="output-line complete">Hàng ${index + 1}: ${line}</div>`;
+            });
+            
+            // Show current line being built (only if we're actively building a row)
+            if (chessCurrentOutputLine && chessI <= chessN && chessJ > 1 && chessJ <= chessN) {
+                html += `<div class="output-line current">Hàng ${chessI}: ${chessCurrentOutputLine}</div>`;
+            }
+            
+            // Show completion message
+            if (chessI > chessN && chessOutputLines.length === chessN) {
+                html += `<div class="output-line" style="color: #68d391; font-weight: bold; margin-top: 10px;">🎉 Hoàn thành! Đã tạo bản cờ vua ${chessN}×${chessN}!</div>`;
+            }
+            
+            if (html === '') {
+                html = '<div class="output-line">Chưa bắt đầu...</div>';
+            }
+            
+            outputDisplay.innerHTML = html;
+            outputDisplay.scrollTop = outputDisplay.scrollHeight;
+        }
+        
+        function resetChessLoop() {
+            clearInterval(chessInterval);
+            chessI = 1;
+            chessJ = 1;
+            chessStarted = false;
+            chessCurrentOutputLine = '';
+            chessOutputLines = [];
+            chessN = parseInt(document.getElementById('chessN').value);
+            
+            document.getElementById('chessI').textContent = '0';
+            document.getElementById('chessJ').textContent = '0';
+            document.getElementById('chessSum').textContent = '0';
+            document.getElementById('chessColor').textContent = '-';
+            document.getElementById('chessN_display').textContent = chessN;
+            document.getElementById('chessExplanation').textContent = 'Nhấn "Bắt Đầu Vẽ" để xem cách tạo bản cờ vua!';
+            
+            // Reset label highlights
+            document.querySelectorAll('#chessRowLabels .label').forEach(label => label.classList.remove('active'));
+            document.querySelectorAll('#chessColLabels .label').forEach(label => label.classList.remove('active'));
+            
+            // Generate row labels (i values)
+            const rowLabels = document.getElementById('chessRowLabels');
+            rowLabels.innerHTML = '';
+            for (let i = 1; i <= chessN; i++) {
+                const label = document.createElement('div');
+                label.className = 'label';
+                label.textContent = `i=${i}`;
+                rowLabels.appendChild(label);
+            }
+            
+            // Generate column labels (j values)
+            const colLabels = document.getElementById('chessColLabels');
+            colLabels.innerHTML = '';
+            for (let j = 1; j <= chessN; j++) {
+                const label = document.createElement('div');
+                label.className = 'label';
+                label.textContent = `j=${j}`;
+                colLabels.appendChild(label);
+            }
+            
+            // Generate chess grid
+            const chessGrid = document.getElementById('chessGrid');
+            chessGrid.style.gridTemplateColumns = `repeat(${chessN}, 50px)`;
+            chessGrid.innerHTML = '';
+            
+            for (let i = 1; i <= chessN; i++) {
+                for (let j = 1; j <= chessN; j++) {
+                    const cell = document.createElement('div');
+                    // Use (i + j) % 2 for chess pattern
+                    const sum = i + j;
+                    const isWhite = sum % 2 === 0;
+                    
+                    cell.className = `chess-cell ${isWhite ? 'white' : 'black'}`;
+                    cell.textContent = isWhite ? 'W' : 'B';
+                    cell.setAttribute('data-i', i);
+                    cell.setAttribute('data-j', j);
+                    cell.style.opacity = '0.3'; // Start with low opacity
+                    chessGrid.appendChild(cell);
+                }
+            }
+            
+            updateChessOutputDisplay();
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974fe1fbb4cda132',t:'MTc1NjE3NTE3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
