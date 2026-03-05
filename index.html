@@ -8,450 +8,347 @@
   <script src="/_sdk/element_sdk.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
   <style>
         * {
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Be Vietnam Pro', sans-serif;
         }
         
-        .title-font {
-            font-family: 'Playfair Display', serif;
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
         
-        /* Gradient background animation */
+        .main-wrapper {
+            min-height: 100%;
+            width: 100%;
+        }
+        
         .gradient-bg {
             background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #1e3a5f 100%);
-            background-size: 200% 200%;
-            animation: gradientShift 8s ease infinite;
         }
         
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        .card-gradient {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
         }
         
-        /* Card hover effects */
-        .card-hover {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .avatar-ring {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #8b5cf6 100%);
+            padding: 4px;
         }
         
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        
-        /* Avatar glow effect */
-        .avatar-glow {
-            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3),
-                        0 0 30px rgba(212, 175, 55, 0.4),
-                        0 20px 40px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .avatar-glow:hover {
-            box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.5),
-                        0 0 50px rgba(212, 175, 55, 0.6),
-                        0 25px 50px rgba(0, 0, 0, 0.4);
-        }
-        
-        /* Trophy icon animation */
-        .trophy-icon {
-            display: inline-block;
-            animation: bounce 2s ease infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-        
-        /* Link hover effect */
-        .link-item {
+        .avatar-container {
             position: relative;
+        }
+        
+        .avatar-container::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #8b5cf6 100%);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.3;
+            animation: pulse-ring 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+        }
+        
+        .achievement-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .achievement-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .achievement-card img {
+            transition: transform 0.3s ease;
+        }
+        
+        .achievement-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .link-item {
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
         
         .link-item::before {
             content: '';
             position: absolute;
             left: 0;
-            bottom: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #d4af37, #f4d03f);
-            transition: width 0.3s ease;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, #f59e0b, #ef4444);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
         }
         
         .link-item:hover::before {
-            width: 100%;
+            transform: scaleY(1);
         }
         
         .link-item:hover {
-            color: #d4af37;
-            padding-left: 10px;
+            transform: translateX(8px);
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.1), transparent);
         }
         
-        /* Gallery image effects */
-        .gallery-img {
-            transition: all 0.4s ease;
-            cursor: pointer;
+        .trophy-icon {
+            animation: bounce-trophy 2s ease-in-out infinite;
         }
         
-        .gallery-img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        @keyframes bounce-trophy {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
         
-        /* Lightbox styles */
-        .lightbox {
-            position: fixed;
-            top: 0;
+        .info-item {
+            transition: all 0.3s ease;
+        }
+        
+        .info-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
             left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+            border-radius: 2px;
+        }
+        
+        .floating-shapes {
+            position: absolute;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            overflow: hidden;
+            pointer-events: none;
         }
         
-        .lightbox.active {
-            display: flex;
-            opacity: 1;
-        }
-        
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 12px;
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.3);
-            animation: zoomIn 0.3s ease;
-        }
-        
-        @keyframes zoomIn {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        
-        .close-btn {
+        .shape {
             position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 40px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1001;
+            opacity: 0.1;
+            animation: float 20s ease-in-out infinite;
         }
         
-        .close-btn:hover {
-            color: #d4af37;
-            transform: rotate(90deg);
+        .shape-1 {
+            top: 10%;
+            left: 5%;
+            width: 100px;
+            height: 100px;
+            background: #f59e0b;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation-delay: 0s;
         }
         
-        /* Decorative elements */
-        .decoration-circle {
-            position: absolute;
+        .shape-2 {
+            top: 60%;
+            right: 10%;
+            width: 150px;
+            height: 150px;
+            background: #8b5cf6;
             border-radius: 50%;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 255, 255, 0.05));
-            animation: float 6s ease-in-out infinite;
+            animation-delay: -5s;
+        }
+        
+        .shape-3 {
+            bottom: 20%;
+            left: 15%;
+            width: 80px;
+            height: 80px;
+            background: #ef4444;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation-delay: -10s;
         }
         
         @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -20px) rotate(5deg); }
+            50% { transform: translate(0, -40px) rotate(0deg); }
+            75% { transform: translate(-20px, -20px) rotate(-5deg); }
         }
         
-        /* Contact info icons */
-        .contact-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #d4af37, #f4d03f);
-            border-radius: 50%;
-            margin-right: 12px;
-            font-size: 16px;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
         
-        /* Section divider */
-        .divider {
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #d4af37, transparent);
-            margin: 20px 0;
-        }
-        
-        /* Scroll reveal animation */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-        
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
+        .achievement-overlay {
+            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.7) 100%);
         }
     </style>
   <style>body { box-sizing: border-box; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="h-full gradient-bg min-h-full overflow-auto"><!-- Decorative circles -->
-  <div class="decoration-circle" style="width: 300px; height: 300px; top: -100px; left: -100px;"></div>
-  <div class="decoration-circle" style="width: 200px; height: 200px; bottom: 100px; right: -50px; animation-delay: -2s;"></div>
-  <div class="decoration-circle" style="width: 150px; height: 150px; top: 50%; left: 10%; animation-delay: -4s;"></div>
-  <div class="w-full min-h-full py-8 px-4 relative z-10">
-   <div class="max-w-7xl mx-auto"><!-- Header Section -->
-    <header class="text-center mb-12 reveal active">
-     <h1 class="title-font text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg" id="page-title">🎓 Trang Cá Nhân Giáo Viên</h1>
-     <div class="divider max-w-md mx-auto"></div>
-    </header><!-- Main Content Grid -->
-    <div class="grid lg:grid-cols-3 gap-8 mb-12"><!-- Left Column - Profile Card -->
-     <div class="lg:col-span-1">
-      <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden card-hover"><!-- Profile Header with gradient -->
-       <div class="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a87] p-8 text-center relative overflow-hidden"><!-- Decorative pattern -->
-        <div class="absolute inset-0 opacity-10">
-         <svg class="w-full h-full" viewbox="0 0 100 100" preserveaspectratio="none"><pattern id="grid" width="10" height="10" patternunits="userSpaceOnUse">
-           <circle cx="5" cy="5" r="1" fill="white" />
-          </pattern> <rect width="100" height="100" fill="url(#grid)" />
-         </svg>
-        </div><!-- Avatar -->
-        <div class="relative z-10">
-         <div class="w-40 h-40 mx-auto rounded-full overflow-hidden avatar-glow border-4 border-white/30"><img src="avatar.jpg" alt="Thầy giáo Nguyễn Lê Hiếu" class="w-full h-full object-cover" loading="lazy" onerror="this.style.background='linear-gradient(135deg, #d4af37, #f4d03f)'; this.alt='Avatar'; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2260%22 x=%2250%%22 text-anchor=%22middle%22>👨‍🏫</text></svg>';">
-         </div>
-         <div class="mt-4">
-          <h2 class="text-2xl font-bold text-white title-font" id="teacher-name">Thầy giáo Nguyễn Lê Hiếu</h2>
-          <p class="text-[#d4af37] font-medium mt-1">Giáo viên Tin học</p>
-         </div>
-        </div>
-       </div><!-- Contact Info -->
-       <div class="p-6 space-y-4">
-        <div class="flex items-center text-gray-700 hover:text-[#1e3a5f] transition-colors"><span class="contact-icon">📧</span> <a href="mailto:nguyenlehieuedu@gmail.com" class="text-sm md:text-base break-all" id="teacher-email">nguyenlehieuedu@gmail.com</a>
-        </div>
-        <div class="flex items-center text-gray-700 hover:text-[#1e3a5f] transition-colors"><span class="contact-icon">📱</span> <span id="teacher-phone">Zalo: 0984.642.505</span>
-        </div>
-        <div class="flex items-center text-gray-700 hover:text-[#1e3a5f] transition-colors"><span class="contact-icon">📍</span> <span id="teacher-location">Quảng Trị</span>
-        </div>
-        <div class="divider"></div><!-- Quick Stats -->
-        <div class="grid grid-cols-2 gap-4 text-center">
-         <div class="bg-gradient-to-br from-[#1e3a5f]/10 to-[#2d5a87]/10 rounded-xl p-4">
-          <div class="text-3xl font-bold text-[#1e3a5f]">
-           15+
-          </div>
-          <div class="text-sm text-gray-600">
-           Năm kinh nghiệm
-          </div>
-         </div>
-         <div class="bg-gradient-to-br from-[#d4af37]/10 to-[#f4d03f]/10 rounded-xl p-4">
-          <div class="text-3xl font-bold text-[#d4af37]">
-           🏆
-          </div>
-          <div class="text-sm text-gray-600">
-           Nhiều giải thưởng
-          </div>
-         </div>
-        </div>
-       </div>
-      </div>
-     </div><!-- Right Column - About & Achievements -->
-     <div class="lg:col-span-2 space-y-8"><!-- About Section -->
-      <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 card-hover reveal active">
-       <div class="flex items-center mb-6">
-        <div class="w-12 h-12 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a87] rounded-xl flex items-center justify-center text-2xl mr-4">
-         📝
-        </div>
-        <h3 class="text-2xl font-bold text-[#1e3a5f] title-font">Giới thiệu</h3>
-       </div>
-       <div class="text-gray-700 leading-relaxed space-y-4">
-        <p class="text-lg">Với niềm đam mê mạnh mẽ dành cho <span class="font-bold text-[#1e3a5f]">Tin học</span> và <span class="font-bold text-[#1e3a5f]">lập trình</span>, thầy <span class="font-bold text-[#d4af37]">Nguyễn Lê Hiếu</span> đã có hơn <span class="font-bold text-[#1e3a5f]">15 năm kinh nghiệm</span> giảng dạy và đào tạo lập trình thi đấu cho nhiều thế hệ học sinh.</p>
-        <p>Trong suốt quá trình giảng dạy, thầy đã góp phần ươm mầm và dẫn dắt học sinh đạt được nhiều thành tích xuất sắc:</p>
-       </div>
-       <div class="divider"></div><!-- Achievements -->
-       <div class="space-y-4">
-        <div class="flex items-start p-4 bg-gradient-to-r from-[#d4af37]/10 to-transparent rounded-xl hover:from-[#d4af37]/20 transition-all"><span class="trophy-icon text-2xl mr-4">🏆</span>
-         <p class="text-gray-700">Giải học sinh giỏi văn hóa môn <span class="font-bold text-[#1e3a5f]">Tin học cấp tỉnh và quốc gia</span></p>
-        </div>
-        <div class="flex items-start p-4 bg-gradient-to-r from-[#d4af37]/10 to-transparent rounded-xl hover:from-[#d4af37]/20 transition-all" style="animation-delay: 0.5s;"><span class="trophy-icon text-2xl mr-4" style="animation-delay: 0.3s;">🏆</span>
-         <p class="text-gray-700">Giải <span class="font-bold text-[#1e3a5f]">Tin học trẻ</span> các cấp</p>
-        </div>
-        <div class="flex items-start p-4 bg-gradient-to-r from-[#d4af37]/10 to-transparent rounded-xl hover:from-[#d4af37]/20 transition-all" style="animation-delay: 1s;"><span class="trophy-icon text-2xl mr-4" style="animation-delay: 0.6s;">🏆</span>
-         <p class="text-gray-700">Giải <span class="font-bold text-[#1e3a5f]">Olympic Tin học</span> khu vực miền Trung – Tây Nguyên</p>
-        </div>
-       </div>
-      </div><!-- HTML Lessons Section -->
-      <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 card-hover reveal active">
-       <div class="flex items-center mb-6">
-        <div class="w-12 h-12 bg-gradient-to-br from-[#d4af37] to-[#f4d03f] rounded-xl flex items-center justify-center text-2xl mr-4">
-         🔗
-        </div>
-        <h3 class="text-2xl font-bold text-[#1e3a5f] title-font">Danh sách các bài HTML</h3>
-       </div>
-       <div class="grid md:grid-cols-2 gap-4"><a href="1. If statement.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center p-4 bg-gray-50 rounded-xl hover:bg-[#1e3a5f]/5 text-gray-700 group"> <span class="w-8 h-8 bg-[#1e3a5f] text-white rounded-lg flex items-center justify-center text-sm font-bold mr-3 group-hover:bg-[#d4af37] transition-colors">1</span> If statement </a> <a href="2. For statement.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center p-4 bg-gray-50 rounded-xl hover:bg-[#1e3a5f]/5 text-gray-700 group"> <span class="w-8 h-8 bg-[#1e3a5f] text-white rounded-lg flex items-center justify-center text-sm font-bold mr-3 group-hover:bg-[#d4af37] transition-colors">2</span> For statement </a> <a href="3. For - minh hoa co vua tam giac so.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center p-4 bg-gray-50 rounded-xl hover:bg-[#1e3a5f]/5 text-gray-700 group"> <span class="w-8 h-8 bg-[#1e3a5f] text-white rounded-lg flex items-center justify-center text-sm font-bold mr-3 group-hover:bg-[#d4af37] transition-colors">3</span> Minh hoạ cờ vua, tam giác số </a> <a href="4. For - duyet theo gt-chi so.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center p-4 bg-gray-50 rounded-xl hover:bg-[#1e3a5f]/5 text-gray-700 group"> <span class="w-8 h-8 bg-[#1e3a5f] text-white rounded-lg flex items-center justify-center text-sm font-bold mr-3 group-hover:bg-[#d4af37] transition-colors">4</span> Duyệt theo giá trị / chỉ số </a> <a href="5. While statement.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center p-4 bg-gray-50 rounded-xl hover:bg-[#1e3a5f]/5 text-gray-700 group"> <span class="w-8 h-8 bg-[#1e3a5f] text-white rounded-lg flex items-center justify-center text-sm font-bold mr-3 group-hover:bg-[#d4af37] transition-colors">5</span> While statement </a> <a href="7.BT-LCS.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center p-4 bg-gray-50 rounded-xl hover:bg-[#1e3a5f]/5 text-gray-700 group"> <span class="w-8 h-8 bg-[#1e3a5f] text-white rounded-lg flex items-center justify-center text-sm font-bold mr-3 group-hover:bg-[#d4af37] transition-colors">7</span> Xâu con chung dài nhất (LCS) </a>
-       </div>
-      </div>
-     </div>
-    </div><!-- Gallery Section -->
-    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 card-hover reveal active">
-     <div class="flex items-center mb-8">
-      <div class="w-12 h-12 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a87] rounded-xl flex items-center justify-center text-2xl mr-4">
-       🖼️
-      </div>
-      <h3 class="text-2xl font-bold text-[#1e3a5f] title-font">Hình ảnh thành tích</h3>
-     </div>
-     <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="relative group">
-       <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-lg gallery-img" onclick="openLightbox('h1.jpg')"><img src="h1.jpg" alt="Thành tích 1" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-[#1e3a5f] to-[#2d5a87] flex items-center justify-center text-4xl\'>🏆</div>';">
-       </div>
-       <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-end justify-center pb-4"><span class="text-white font-medium">Click để xem</span>
-       </div>
-      </div>
-      <div class="relative group">
-       <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-lg gallery-img" onclick="openLightbox('h2.jpg')"><img src="h2.jpg" alt="Thành tích 2" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-[#d4af37] to-[#f4d03f] flex items-center justify-center text-4xl\'>🎖️</div>';">
-       </div>
-       <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-end justify-center pb-4"><span class="text-white font-medium">Click để xem</span>
-       </div>
-      </div>
-      <div class="relative group">
-       <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-lg gallery-img" onclick="openLightbox('h3.jpg')"><img src="h3.jpg" alt="Thành tích 3" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-[#1e3a5f] to-[#2d5a87] flex items-center justify-center text-4xl\'>🥇</div>';">
-       </div>
-       <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-end justify-center pb-4"><span class="text-white font-medium">Click để xem</span>
-       </div>
-      </div>
-      <div class="relative group">
-       <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-lg gallery-img" onclick="openLightbox('h4.jpg')"><img src="h4.jpg" alt="Thành tích 4" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-[#d4af37] to-[#f4d03f] flex items-center justify-center text-4xl\'>🏅</div>';">
-       </div>
-       <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-end justify-center pb-4"><span class="text-white font-medium">Click để xem</span>
-       </div>
-      </div>
-     </div>
-    </div><!-- Footer -->
-    <footer class="text-center mt-12 pb-8">
-     <p class="text-white/70 text-sm">© 2024 Thầy giáo Nguyễn Lê Hiếu | Tất cả quyền được bảo lưu</p>
-    </footer>
+ <body class="h-full">
+  <div class="main-wrapper gradient-bg overflow-auto"><!-- Floating Shapes -->
+   <div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
    </div>
-  </div><!-- Lightbox -->
-  <div id="lightbox" class="lightbox" onclick="closeLightbox()"><span class="close-btn" onclick="closeLightbox()">×</span> <img id="lightbox-img" src="" alt="Hình ảnh phóng lớn">
+   <div class="relative z-10 py-8 px-4 md:px-8 lg:px-12"><!-- Header -->
+    <header class="text-center mb-8">
+     <h1 id="page-title" class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">👨‍🏫 HỌC LIỆU TRỰC QUAN</h1>
+     <p class="text-amber-200 text-lg">Đam mê giảng dạy - Tận tâm đào tạo</p>
+    </header><!-- Main Content -->
+    <div class="max-w-7xl mx-auto">
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-8"><!-- Left Column - Profile Card -->
+      <div class="lg:col-span-1">
+       <div class="glass-card rounded-3xl shadow-2xl p-6 md:p-8 sticky top-8"><!-- Avatar -->
+        <div class="flex justify-center mb-6">
+         <div class="avatar-container">
+          <div class="avatar-ring rounded-full"><img src="avatar.jpg" alt="Avatar Thầy Nguyễn Lê Hiếu" class="w-40 h-40 md:w-48 md:h-48 rounded-full object-cover" loading="lazy" onerror="this.style.background='linear-gradient(135deg, #1e3a5f, #2d5a87)'; this.alt='Avatar'; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>👨‍🏫</text></svg>';">
+          </div>
+         </div>
+        </div><!-- Name -->
+        <h2 id="teacher-name" class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-2">Thầy giáo Nguyễn Lê Hiếu</h2>
+        <p class="text-center text-amber-600 font-semibold mb-6">🎓 Giáo viên Tin học</p><!-- Contact Info -->
+        <div class="space-y-4">
+         <div class="info-item flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-transparent rounded-xl"><span class="text-2xl">📧</span>
+          <div>
+           <p class="text-xs text-gray-500 uppercase tracking-wider">Email</p><a id="teacher-email" href="mailto:nguyenlehieuedu@gmail.com" class="text-gray-700 hover:text-blue-600 font-medium text-sm md:text-base break-all"> nguyenlehieuedu@gmail.com </a>
+          </div>
+         </div>
+         <div class="info-item flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-transparent rounded-xl"><span class="text-2xl">📱</span>
+          <div>
+           <p class="text-xs text-gray-500 uppercase tracking-wider">Zalo</p><a id="teacher-phone" href="https://zalo.me/0984642505" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-green-600 font-medium"> 0984.642.505 </a>
+          </div>
+         </div>
+         <div class="info-item flex items-center gap-3 p-3 bg-gradient-to-r from-red-50 to-transparent rounded-xl"><span class="text-2xl">📍</span>
+          <div>
+           <p class="text-xs text-gray-500 uppercase tracking-wider">Địa chỉ</p>
+           <p id="teacher-location" class="text-gray-700 font-medium">Quảng Trị</p>
+          </div>
+         </div>
+        </div><!-- Social Stats -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+         <div class="grid grid-cols-2 gap-4 text-center">
+          <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-4">
+           <p class="text-3xl font-bold text-amber-600">15+</p>
+           <p class="text-xs text-gray-600">Năm kinh nghiệm</p>
+          </div>
+          <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-4">
+           <p class="text-3xl font-bold text-purple-600">100+</p>
+           <p class="text-xs text-gray-600">Học sinh giỏi</p>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div><!-- Right Column - Content -->
+      <div class="lg:col-span-2 space-y-6"><!-- About Section -->
+       <div class="glass-card rounded-3xl shadow-2xl p-6 md:p-8">
+        <h3 class="section-title text-xl md:text-2xl font-bold text-gray-800 mb-6">✨ Giới thiệu</h3>
+        <p class="text-gray-600 leading-relaxed mb-6 text-base md:text-lg">Với niềm đam mê mạnh mẽ dành cho <span class="text-blue-600 font-semibold">Tin học</span> và <span class="text-purple-600 font-semibold">lập trình</span>, thầy <strong class="text-gray-800">Nguyễn Lê Hiếu</strong> đã có hơn <span class="text-amber-600 font-bold">15 năm</span> kinh nghiệm giảng dạy và đào tạo lập trình thi đấu cho nhiều thế hệ học sinh.</p>
+        <p class="text-gray-600 leading-relaxed mb-6 text-base md:text-lg">Trong suốt quá trình giảng dạy, thầy đã góp phần ươm mầm và dẫn dắt học sinh đạt được nhiều thành tích xuất sắc:</p><!-- Achievements List -->
+        <div class="space-y-4">
+         <div class="flex items-start gap-4 p-4 bg-gradient-to-r from-amber-50 via-amber-50 to-transparent rounded-2xl border-l-4 border-amber-400"><span class="trophy-icon text-3xl">🏆</span>
+          <p class="text-gray-700 font-medium">Giải học sinh giỏi văn hóa môn Tin học <span class="text-amber-600 font-bold">cấp tỉnh</span> và <span class="text-red-600 font-bold">quốc gia</span></p>
+         </div>
+         <div class="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 via-blue-50 to-transparent rounded-2xl border-l-4 border-blue-400"><span class="trophy-icon text-3xl" style="animation-delay: 0.3s;">🏆</span>
+          <p class="text-gray-700 font-medium">Giải <span class="text-blue-600 font-bold">Tin học trẻ</span> các cấp</p>
+         </div>
+         <div class="flex items-start gap-4 p-4 bg-gradient-to-r from-purple-50 via-purple-50 to-transparent rounded-2xl border-l-4 border-purple-400"><span class="trophy-icon text-3xl" style="animation-delay: 0.6s;">🏆</span>
+          <p class="text-gray-700 font-medium">Giải <span class="text-purple-600 font-bold">Olympic Tin học</span> khu vực miền Trung – Tây Nguyên</p>
+         </div>
+        </div>
+       </div><!-- Course Links Section -->
+       <div class="glass-card rounded-3xl shadow-2xl p-6 md:p-8">
+        <h3 class="section-title text-xl md:text-2xl font-bold text-gray-800 mb-6">📚 Danh sách học liệu</h3>
+        <div class="space-y-3"><a href="1. If statement.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md"> <span class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">1</span> <span class="text-gray-700 font-medium">If statement</span> <span class="ml-auto text-gray-400">→</span> </a> <a href="2. For statement.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md"> <span class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">2</span> <span class="text-gray-700 font-medium">For statement</span> <span class="ml-auto text-gray-400">→</span> </a> <a href="3. For - minh hoa co vua tam giac so.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md"> <span class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">3</span> <span class="text-gray-700 font-medium">Minh hoạ cờ vua, tam giác số</span> <span class="ml-auto text-gray-400">→</span> </a> <a href="4. For - duyet theo gt-chi so.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md"> <span class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">4</span> <span class="text-gray-700 font-medium">Duyệt theo giá trị / chỉ số</span> <span class="ml-auto text-gray-400">→</span> </a> <a href="5. While statement.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md"> <span class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">5</span> <span class="text-gray-700 font-medium">While statement</span> <span class="ml-auto text-gray-400">→</span> </a> <a href="7.BT-LCS.html" target="_blank" rel="noopener noreferrer" class="link-item flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md"> <span class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">7</span> <span class="text-gray-700 font-medium">Xâu con chung dài nhất (LCS)</span> <span class="ml-auto text-gray-400">→</span> </a>
+        </div>
+       </div>
+      </div>
+     </div><!-- Achievement Gallery -->
+     <div class="glass-card rounded-3xl shadow-2xl p-6 md:p-8">
+      <h3 class="section-title text-xl md:text-2xl font-bold text-gray-800 mb-6">🖼️ Một số hình ảnh</h3>
+      <p class="text-gray-500 mb-6 text-sm">💡 Click vào hình để xem phóng to</p>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"><!-- Image 1 --> <a href="h1.jpg" target="_blank" rel="noopener noreferrer" class="achievement-card group relative rounded-2xl overflow-hidden shadow-lg aspect-[4/3]"> <img src="h1.jpg" alt="Thành tích 1" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center\'><span class=\'text-4xl\'>🏆</span></div>';">
+        <div class="achievement-overlay absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4"><span class="text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full"> 🔍 Xem ảnh </span>
+        </div></a> <!-- Image 2 --> <a href="h2.jpg" target="_blank" rel="noopener noreferrer" class="achievement-card group relative rounded-2xl overflow-hidden shadow-lg aspect-[4/3]"> <img src="h2.jpg" alt="Thành tích 2" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center\'><span class=\'text-4xl\'>🎖️</span></div>';">
+        <div class="achievement-overlay absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4"><span class="text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full"> 🔍 Xem ảnh </span>
+        </div></a> <!-- Image 3 --> <a href="h3.jpg" target="_blank" rel="noopener noreferrer" class="achievement-card group relative rounded-2xl overflow-hidden shadow-lg aspect-[4/3]"> <img src="h3.jpg" alt="Thành tích 3" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center\'><span class=\'text-4xl\'>🥇</span></div>';">
+        <div class="achievement-overlay absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4"><span class="text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full"> 🔍 Xem ảnh </span>
+        </div></a> <!-- Image 4 --> <a href="h4.jpg" target="_blank" rel="noopener noreferrer" class="achievement-card group relative rounded-2xl overflow-hidden shadow-lg aspect-[4/3]"> <img src="h4.jpg" alt="Thành tích 4" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center\'><span class=\'text-4xl\'>🌟</span></div>';">
+        <div class="achievement-overlay absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4"><span class="text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full"> 🔍 Xem ảnh </span>
+        </div></a>
+      </div>
+     </div><!-- Footer -->
+     <footer class="text-center mt-8 pb-8">
+      <p class="text-white/70 text-sm">© 2024 Thầy giáo Nguyễn Lê Hiếu | Made with ❤️ for education</p>
+     </footer>
+    </div>
+   </div>
   </div>
   <script>
         // Default configuration
         const defaultConfig = {
             teacher_name: 'Thầy giáo Nguyễn Lê Hiếu',
             teacher_email: 'nguyenlehieuedu@gmail.com',
-            teacher_phone: 'Zalo: 0984.642.505',
+            teacher_phone: '0984.642.505',
             teacher_location: 'Quảng Trị',
-            background_color: '#1e3a5f',
-            text_color: '#333333',
-            accent_color: '#d4af37',
+            primary_color: '#1e3a5f',
+            accent_color: '#f59e0b',
+            text_color: '#374151',
             card_color: '#ffffff',
-            secondary_color: '#2d5a87'
+            secondary_color: '#8b5cf6'
         };
 
-        // Lightbox functions
-        function openLightbox(imageSrc) {
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            lightboxImg.src = imageSrc;
-            lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeLightbox(event) {
-            if (event) {
-                event.stopPropagation();
-            }
-            const lightbox = document.getElementById('lightbox');
-            lightbox.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close lightbox with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeLightbox();
-            }
-        });
-
-        // Scroll reveal animation
-        function revealOnScroll() {
-            const reveals = document.querySelectorAll('.reveal');
-            reveals.forEach(reveal => {
-                const windowHeight = window.innerHeight;
-                const revealTop = reveal.getBoundingClientRect().top;
-                const revealPoint = 150;
-
-                if (revealTop < windowHeight - revealPoint) {
-                    reveal.classList.add('active');
-                }
-            });
-        }
-
-        window.addEventListener('scroll', revealOnScroll);
-        revealOnScroll();
-
-        // Element SDK initialization
+        // Initialize Element SDK
         if (window.elementSdk) {
             window.elementSdk.init({
-                defaultConfig: defaultConfig,
+                defaultConfig,
                 onConfigChange: async (config) => {
                     // Update teacher name
                     const nameEl = document.getElementById('teacher-name');
                     if (nameEl) nameEl.textContent = config.teacher_name || defaultConfig.teacher_name;
-
+                    
                     // Update email
                     const emailEl = document.getElementById('teacher-email');
                     if (emailEl) {
-                        emailEl.textContent = config.teacher_email || defaultConfig.teacher_email;
-                        emailEl.href = 'mailto:' + (config.teacher_email || defaultConfig.teacher_email);
+                        const email = config.teacher_email || defaultConfig.teacher_email;
+                        emailEl.textContent = email;
+                        emailEl.href = `mailto:${email}`;
                     }
-
+                    
                     // Update phone
                     const phoneEl = document.getElementById('teacher-phone');
-                    if (phoneEl) phoneEl.textContent = config.teacher_phone || defaultConfig.teacher_phone;
-
+                    if (phoneEl) {
+                        const phone = config.teacher_phone || defaultConfig.teacher_phone;
+                        phoneEl.textContent = phone;
+                        phoneEl.href = `https://zalo.me/${phone.replace(/\./g, '')}`;
+                    }
+                    
                     // Update location
                     const locationEl = document.getElementById('teacher-location');
                     if (locationEl) locationEl.textContent = config.teacher_location || defaultConfig.teacher_location;
-
-                    // Update colors
-                    const bgColor = config.background_color || defaultConfig.background_color;
-                    const textColor = config.text_color || defaultConfig.text_color;
-                    const accentColor = config.accent_color || defaultConfig.accent_color;
-                    const cardColor = config.card_color || defaultConfig.card_color;
-                    const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
-
-                    document.body.style.background = `linear-gradient(135deg, ${bgColor} 0%, ${secondaryColor} 50%, ${bgColor} 100%)`;
                 },
                 mapToCapabilities: (config) => ({
                     recolorables: [
                         {
-                            get: () => config.background_color || defaultConfig.background_color,
+                            get: () => config.primary_color || defaultConfig.primary_color,
                             set: (value) => {
-                                config.background_color = value;
-                                window.elementSdk.setConfig({ background_color: value });
-                            }
-                        },
-                        {
-                            get: () => config.card_color || defaultConfig.card_color,
-                            set: (value) => {
-                                config.card_color = value;
-                                window.elementSdk.setConfig({ card_color: value });
-                            }
-                        },
-                        {
-                            get: () => config.text_color || defaultConfig.text_color,
-                            set: (value) => {
-                                config.text_color = value;
-                                window.elementSdk.setConfig({ text_color: value });
+                                config.primary_color = value;
+                                window.elementSdk.setConfig({ primary_color: value });
                             }
                         },
                         {
@@ -462,10 +359,10 @@
                             }
                         },
                         {
-                            get: () => config.secondary_color || defaultConfig.secondary_color,
+                            get: () => config.text_color || defaultConfig.text_color,
                             set: (value) => {
-                                config.secondary_color = value;
-                                window.elementSdk.setConfig({ secondary_color: value });
+                                config.text_color = value;
+                                window.elementSdk.setConfig({ text_color: value });
                             }
                         }
                     ],
@@ -482,5 +379,5 @@
             });
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d78ad07a2b2cdfa',t:'MTc3MjcwOTA0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d78b8c4b762cdfa',t:'MTc3MjcwOTUyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
