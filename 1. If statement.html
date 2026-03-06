@@ -3,528 +3,341 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trực quan hóa câu lệnh if trong Python</title>
+  <title>Trực quan hóa câu lệnh rẽ nhánh IF trong Python</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="/_sdk/element_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; }
+    * { font-family: 'Nunito', sans-serif; }
     .code-font { font-family: 'JetBrains Mono', monospace; }
     
-    .flowchart-box {
-      transition: all 0.4s ease;
+    .flowchart-node {
+      transition: all 0.3s ease;
     }
     
-    .flowchart-box.active {
-      filter: drop-shadow(0 0 12px rgba(234, 179, 8, 0.6));
-    }
-    
-    .arrow-path {
-      transition: stroke 0.4s ease, stroke-width 0.4s ease;
-    }
-    
-    .arrow-path.active {
-      stroke-width: 3;
-      filter: drop-shadow(0 0 4px currentColor);
+    .flowchart-node.active {
+      filter: drop-shadow(0 0 12px #3b82f6);
+      transform: scale(1.05);
     }
     
     .code-line {
-      transition: background-color 0.3s ease;
-      padding: 4px 12px;
-      border-radius: 4px;
+      transition: all 0.3s ease;
+      border-left: 4px solid transparent;
     }
     
-    .code-line.highlight {
-      background-color: #fef08a;
+    .code-line.active {
+      background: linear-gradient(90deg, #fef08a 0%, #fef9c3 100%);
+      border-left-color: #f59e0b;
+      transform: translateX(8px);
     }
     
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
+    .arrow-path {
+      stroke-dasharray: 8;
+      animation: none;
     }
     
-    .pulse-animation {
-      animation: pulse 1s ease-in-out infinite;
+    .arrow-path.animating {
+      animation: flowArrow 0.8s linear infinite;
     }
     
-    .btn-primary {
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    @keyframes flowArrow {
+      to { stroke-dashoffset: -16; }
+    }
+    
+    .tab-btn.active {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+    
+    .control-btn {
       transition: all 0.2s ease;
     }
     
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    .control-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     }
     
-    .btn-secondary {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    .control-btn:active {
+      transform: translateY(0);
     }
     
-    .btn-secondary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    .quiz-option {
+      transition: all 0.2s ease;
     }
     
-    .syntax-box {
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      border-left: 4px solid #0284c7;
+    .quiz-option:hover {
+      transform: translateX(8px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .quiz-option.correct {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+    }
+    
+    .quiz-option.incorrect {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+    
+    .section-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .output-box {
+      min-height: 60px;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-radius: 12px;
+      padding: 16px;
+      color: #4ade80;
+      font-family: 'JetBrains Mono', monospace;
     }
   </style>
   <style>body { box-sizing: border-box; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="h-full bg-sky-50 overflow-auto">
-  <div class="w-full min-h-full p-4 md:p-6"><!-- Header Section -->
+ <body class="h-full bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-100 overflow-auto">
+  <div class="w-full min-h-full p-4 md:p-6">
+   <!-- Header -->
    <header class="text-center mb-6">
-    <h1 id="main-title" class="text-2xl md:text-3xl font-bold text-blue-800 mb-4">🐍 Trực quan hóa câu lệnh rẽ nhánh <span class="text-emerald-600">if</span> trong Python</h1><!-- Syntax Summary -->
-    <div class="flex flex-wrap justify-center gap-4 md:gap-6">
-     <div id="syntax-short" class="syntax-box p-4 rounded-xl shadow-md max-w-xs">
-      <h3 class="font-semibold text-blue-700 mb-2">📝 Dạng thiếu</h3>
-      <pre class="code-font text-sm text-left text-gray-800 bg-white/50 p-3 rounded-lg"><span class="text-blue-600 font-semibold">if</span> (điều_kiện):
-    câu_lệnh_1</pre>
-     </div>
-     <div id="syntax-full" class="syntax-box p-4 rounded-xl shadow-md max-w-xs">
-      <h3 class="font-semibold text-blue-700 mb-2">📝 Dạng đầy đủ</h3>
-      <pre class="code-font text-sm text-left text-gray-800 bg-white/50 p-3 rounded-lg"><span class="text-blue-600 font-semibold">if</span> (điều_kiện):
-    câu_lệnh_1
-<span class="text-blue-600 font-semibold">else</span>:
-    câu_lệnh_2</pre>
-     </div>
-     <div class="syntax-box p-4 rounded-xl shadow-md max-w-sm">
-      <h3 class="font-semibold text-blue-700 mb-2">💡 Biểu thức điều kiện</h3>
-      <p class="text-sm text-gray-700">Biểu thức trả về <span class="text-emerald-600 font-semibold">True</span> hoặc <span class="text-red-500 font-semibold">False</span></p>
-      <p class="text-xs text-gray-500 mt-1">Ví dụ: x &gt; 0, x % 2 == 0, x != 5</p>
+    <h1 id="pageTitle" class="text-2xl md:text-3xl font-extrabold gradient-text mb-2">🐍 Trực quan hóa câu lệnh rẽ nhánh IF trong Python</h1>
+    <p class="text-blue-600 text-lg">Dành cho học sinh mới bắt đầu học lập trình</p>
+   </header><!-- Section 1: Theory Summary -->
+   <section class="section-card p-5 mb-6">
+    <h2 id="theoryTitle" class="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2">📚 Tóm tắt lý thuyết</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+     <!-- If dạng thiếu -->
+     <div class="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-4 border-2 border-amber-200">
+      <h3 class="font-bold text-amber-700 mb-3 text-lg">📌 Dạng thiếu (if)</h3>
+      <div class="bg-amber-100/80 rounded-lg p-4 code-font text-base">
+       <div class="text-purple-700 font-semibold">
+        if
+       </div>
+       <div class="pl-4 text-gray-700">
+        (điều_kiện):
+       </div>
+       <div class="pl-8 text-green-700">
+        câu_lệnh
+       </div>
+      </div>
+      <p class="mt-3 text-gray-600 text-sm">➡️ Nếu điều kiện <strong class="text-green-600">đúng</strong>, thực hiện câu lệnh</p>
+     </div><!-- If dạng đủ -->
+     <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 border-2 border-emerald-200">
+      <h3 class="font-bold text-emerald-700 mb-3 text-lg">📌 Dạng đủ (if-else)</h3>
+      <div class="bg-emerald-100/80 rounded-lg p-4 code-font text-base">
+       <div><span class="text-purple-700 font-semibold">if</span> <span class="text-gray-700">(điều_kiện):</span>
+       </div>
+       <div class="pl-8 text-green-700">
+        câu_lệnh_1
+       </div>
+       <div class="text-purple-700 font-semibold">
+        else:
+       </div>
+       <div class="pl-8 text-blue-700">
+        câu_lệnh_2
+       </div>
+      </div>
+      <p class="mt-3 text-gray-600 text-sm">➡️ Nếu <strong class="text-green-600">đúng</strong> → câu_lệnh_1, nếu <strong class="text-red-500">sai</strong> → câu_lệnh_2</p>
      </div>
     </div>
-   </header><!-- Control Section -->
-   <section class="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-6">
-    <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
-     <div class="flex items-center gap-2"><label class="font-medium text-gray-700">Nhập x:</label> <input type="number" id="inputX" value="5" class="w-24 px-4 py-2 border-2 border-blue-200 rounded-xl text-center text-lg font-semibold focus:border-blue-500 focus:outline-none transition-colors">
-     </div><button id="btnStep" class="btn-primary text-white px-5 py-2 rounded-xl font-medium shadow-md"> ▶️ Chạy từng bước </button> <button id="btnAuto" class="btn-secondary text-white px-5 py-2 rounded-xl font-medium shadow-md"> ⏩ Chạy tự động </button> <button id="btnReset" class="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-5 py-2 rounded-xl font-medium shadow-md hover:shadow-lg transition-all"> 🔄 Reset </button> <button id="btnToggle" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-5 py-2 rounded-xl font-medium shadow-md hover:shadow-lg transition-all"> 🔀 Dạng thiếu </button>
-    </div><!-- Expression Display -->
-    <div class="flex flex-wrap justify-center gap-4 text-center">
-     <div class="bg-blue-50 px-4 py-2 rounded-xl"><span class="text-gray-600">Biểu thức: </span> <span class="code-font font-semibold text-blue-700">x % 2 == 0</span>
+   </section><!-- Section 2: Controls -->
+   <section class="section-card p-5 mb-6">
+    <div class="flex flex-wrap items-center gap-4 mb-4">
+     <!-- Tab buttons -->
+     <div class="flex gap-2">
+      <button id="tabThieu" onclick="switchTab('thieu')" class="tab-btn active px-5 py-2 rounded-full font-bold text-base transition-all"> Dạng thiếu </button> <button id="tabDu" onclick="switchTab('du')" class="tab-btn px-5 py-2 rounded-full font-bold text-base bg-gray-200 text-gray-600 transition-all"> Dạng đủ </button>
+     </div><!-- Input -->
+     <div class="flex items-center gap-2 bg-white rounded-full px-4 py-2 border-2 border-blue-200">
+      <label class="font-bold text-blue-700">Nhập x =</label> <input type="number" id="inputX" value="4" class="w-20 px-3 py-1 border-2 border-blue-300 rounded-lg text-center font-bold text-lg focus:outline-none focus:border-blue-500">
+     </div><!-- Control buttons -->
+     <div class="flex gap-2 flex-wrap">
+      <button onclick="stepExecution()" class="control-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-5 py-2 rounded-full font-bold flex items-center gap-2"> <span>👣</span> Từng bước </button> <button onclick="runAuto()" class="control-btn bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2 rounded-full font-bold flex items-center gap-2"> <span>▶️</span> Chạy tự động </button> <button onclick="resetExecution()" class="control-btn bg-gradient-to-r from-orange-400 to-orange-500 text-white px-5 py-2 rounded-full font-bold flex items-center gap-2"> <span>🔄</span> Reset </button>
      </div>
-     <div id="expressionResult" class="bg-gray-50 px-4 py-2 rounded-xl"><span class="text-gray-600">Kết quả: </span> <span class="code-font font-semibold" id="calcResult">—</span>
-     </div>
-     <div id="stepIndicator" class="bg-amber-50 px-4 py-2 rounded-xl"><span class="text-gray-600">Bước: </span> <span class="font-semibold text-amber-700" id="stepNum">0/6</span>
+    </div><!-- Output -->
+    <div class="output-box">
+     <span class="text-gray-400">Output: </span> <span id="outputText" class="text-lg"></span>
+    </div>
+   </section><!-- Section 3: Visualization -->
+   <section class="section-card p-5 mb-6">
+    <h2 class="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2">🎯 Mô phỏng trực quan</h2>
+    <div class="grid lg:grid-cols-2 gap-6">
+     <!-- Left: Flowchart -->
+     <div class="bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-4">
+      <h3 class="font-bold text-gray-700 mb-3 text-center text-lg">📊 Sơ đồ khối</h3><!-- Dạng thiếu flowchart -->
+      <div id="flowchartThieu" class="flex justify-center">
+       <svg viewbox="0 0 400 385" class="w-full max-w-md">
+        <!-- Start --> <ellipse id="node-start-t" cx="200" cy="30" rx="50" ry="22" fill="#22c55e" class="flowchart-node" /> <text x="200" y="35" text-anchor="middle" fill="white" font-weight="bold" font-size="14">
+         Bắt đầu
+        </text> <!-- Arrow Start to Input --> <path id="arrow1-t" d="M200,52 L200,60" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <!-- Input x --> <rect id="node-input-t" x="125" y="60" width="150" height="50" rx="5" fill="#3b82f6" class="flowchart-node" /> <text x="200" y="83" text-anchor="middle" fill="white" font-weight="bold" font-size="13">
+         Nhập x = 
+         <tspan id="input-x-value-t" font-weight="bold">
+          4
+         </tspan>
+        </text> <!-- Arrow Input to Condition --> <path id="arrow2-t" d="M200,110 L200,125" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <!-- Condition diamond --> <polygon id="node-condition-t" points="200,130 270,175 200,220 130,175" fill="#f59e0b" class="flowchart-node" /> <text x="200" y="175" text-anchor="middle" fill="white" font-weight="bold" font-size="12">
+         x % 2 == 0?
+        </text> <!-- True branch --> <path id="arrow-true-t" d="M200,220 L200,255" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <text x="215" y="242" fill="#22c55e" font-weight="bold" font-size="11">
+         True
+        </text> <!-- Print chẵn --> <rect id="node-print-t" x="110" y="260" width="180" height="40" rx="5" fill="#8b5cf6" class="flowchart-node" /> <text x="200" y="285" text-anchor="middle" fill="white" font-weight="bold" font-size="12">
+         In "x là số chẵn"
+        </text> <!-- False branch - goes right then down --> <path id="arrow-false-t" d="M270,175 L320,175 L320,330 L250,330" stroke="#ef4444" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <text x="290" y="165" fill="#ef4444" font-weight="bold" font-size="11">
+         False
+        </text> <!-- Arrow from print to end --> <path id="arrow3-t" d="M200,300 L200,330" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <!-- End --> <ellipse id="node-end-t" cx="200" cy="360" rx="50" ry="22" fill="#ef4444" class="flowchart-node" /> <text x="200" y="365" text-anchor="middle" fill="white" font-weight="bold" font-size="14">
+         Kết thúc
+        </text> <!-- Arrowhead marker --> <defs>
+         <marker id="arrowhead" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+         </marker>
+         <marker id="arrowhead-green" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
+         </marker>
+         <marker id="arrowhead-red" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
+         </marker>
+        </defs>
+       </svg>
+      </div><!-- Dạng đủ flowchart -->
+      <div id="flowchartDu" class="hidden flex justify-center">
+       <svg viewbox="0 0 500 450" class="w-full max-w-md">
+        <!-- Start --> <ellipse id="node-start-d" cx="250" cy="30" rx="50" ry="22" fill="#22c55e" class="flowchart-node" /> <text x="250" y="35" text-anchor="middle" fill="white" font-weight="bold" font-size="14">
+         Bắt đầu
+        </text> <!-- Arrow Start to Input --> <path id="arrow1-d" d="M250,52 L250,60" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <!-- Input x --> <rect id="node-input-d" x="175" y="60" width="150" height="50" rx="5" fill="#3b82f6" class="flowchart-node" /> <text x="250" y="83" text-anchor="middle" fill="white" font-weight="bold" font-size="13">
+         Nhập x = 
+         <tspan id="input-x-value-d" font-weight="bold">
+          4
+         </tspan>
+        </text> <!-- Arrow Input to Condition --> <path id="arrow2-d" d="M250,110 L250,135" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <!-- Condition diamond --> <polygon id="node-condition-d" points="250,145 320,195 250,245 180,195" fill="#f59e0b" class="flowchart-node" /> <text x="250" y="200" text-anchor="middle" fill="white" font-weight="bold" font-size="12">
+         x % 2 == 0?
+        </text> <!-- True branch LEFT --> <path id="arrow-true-d" d="M180,195 L80,195 L80,280" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <text x="120" y="185" fill="#22c55e" font-weight="bold" font-size="12">
+         True
+        </text> <!-- Print chẵn --> <rect id="node-print-chan-d" x="20" y="285" width="120" height="40" rx="5" fill="#8b5cf6" class="flowchart-node" /> <text x="80" y="310" text-anchor="middle" fill="white" font-weight="bold" font-size="11">
+         In "chẵn"
+        </text> <!-- False branch RIGHT --> <path id="arrow-false-d" d="M320,195 L420,195 L420,280" stroke="#ef4444" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <text x="360" y="185" fill="#ef4444" font-weight="bold" font-size="12">
+         False
+        </text> <!-- Print lẻ --> <rect id="node-print-le-d" x="360" y="285" width="120" height="40" rx="5" fill="#ec4899" class="flowchart-node" /> <text x="420" y="310" text-anchor="middle" fill="white" font-weight="bold" font-size="11">
+         In "lẻ"
+        </text> <!-- Arrows to end --> <path id="arrow3-d" d="M80,325 L80,380 L250,380" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <path id="arrow4-d" d="M420,325 L420,380 L250,380" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <!-- End --> <ellipse id="node-end-d" cx="250" cy="410" rx="50" ry="22" fill="#ef4444" class="flowchart-node" /> <text x="250" y="415" text-anchor="middle" fill="white" font-weight="bold" font-size="14">
+         Kết thúc
+        </text> <!-- Arrowhead marker --> <defs>
+         <marker id="arrowhead" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+         </marker>
+         <marker id="arrowhead-green" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
+         </marker>
+         <marker id="arrowhead-red" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
+         </marker>
+        </defs>
+       </svg>
+      </div>
+     </div><!-- Right: Code -->
+     <div class="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-4 border-2 border-amber-200">
+      <h3 class="font-bold text-amber-700 mb-3 text-center text-lg">💻 Code Python</h3><!-- Dạng thiếu code -->
+      <div id="codeThieu" class="bg-amber-100/80 rounded-xl p-4 code-font text-lg">
+       <div id="code-t-1" class="code-line p-2 rounded-lg mb-1">
+        <span class="text-gray-500">1</span> <span class="text-blue-600 ml-4">x</span> <span class="text-gray-700"> = </span> <span class="text-purple-600 font-bold" id="code-x-value-t">4</span>
+       </div>
+       <div id="code-t-2" class="code-line p-2 rounded-lg mb-1">
+        <span class="text-gray-500">2</span> <span class="text-purple-700 font-bold ml-4">if</span> <span class="text-blue-600"> x</span> <span class="text-gray-700"> % </span> <span class="text-orange-600">2</span> <span class="text-gray-700"> == </span> <span class="text-orange-600">0</span> <span class="text-gray-700">:</span>
+       </div>
+       <div id="code-t-3" class="code-line p-2 rounded-lg">
+        <span class="text-gray-500">3</span> <span class="text-purple-700 font-bold ml-8">print</span> <span class="text-gray-700">(</span> <span class="text-green-600">"x là số chẵn"</span> <span class="text-gray-700">)</span>
+       </div>
+      </div><!-- Dạng đủ code -->
+      <div id="codeDu" class="hidden bg-amber-100/80 rounded-xl p-4 code-font text-lg">
+       <div id="code-d-1" class="code-line p-2 rounded-lg mb-1">
+        <span class="text-gray-500">1</span> <span class="text-blue-600 ml-4">x</span> <span class="text-gray-700"> = </span> <span class="text-purple-600 font-bold" id="code-x-value-d">4</span>
+       </div>
+       <div id="code-d-2" class="code-line p-2 rounded-lg mb-1">
+        <span class="text-gray-500">2</span> <span class="text-purple-700 font-bold ml-4">if</span> <span class="text-blue-600"> x</span> <span class="text-gray-700"> % </span> <span class="text-orange-600">2</span> <span class="text-gray-700"> == </span> <span class="text-orange-600">0</span> <span class="text-gray-700">:</span>
+       </div>
+       <div id="code-d-3" class="code-line p-2 rounded-lg mb-1">
+        <span class="text-gray-500">3</span> <span class="text-purple-700 font-bold ml-8">print</span> <span class="text-gray-700">(</span> <span class="text-green-600">"x là số chẵn"</span> <span class="text-gray-700">)</span>
+       </div>
+       <div id="code-d-4" class="code-line p-2 rounded-lg mb-1">
+        <span class="text-gray-500">4</span> <span class="text-purple-700 font-bold ml-4">else</span> <span class="text-gray-700">:</span>
+       </div>
+       <div id="code-d-5" class="code-line p-2 rounded-lg">
+        <span class="text-gray-500">5</span> <span class="text-purple-700 font-bold ml-8">print</span> <span class="text-gray-700">(</span> <span class="text-green-600">"x là số lẻ"</span> <span class="text-gray-700">)</span>
+       </div>
+      </div><!-- Legend -->
+      <div class="mt-4 flex flex-wrap gap-3 justify-center text-sm">
+       <span class="bg-white px-3 py-1 rounded-full border"><span class="text-purple-700 font-bold">if/else</span> - từ khóa</span> <span class="bg-white px-3 py-1 rounded-full border"><span class="text-blue-600">x</span> - biến</span> <span class="bg-white px-3 py-1 rounded-full border"><span class="text-green-600">"..."</span> - chuỗi</span>
+      </div>
      </div>
     </div>
-   </section><!-- Main Content: Flowchart & Code -->
-   <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"><!-- Flowchart Column -->
-    <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
-     <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">📊 Sơ đồ khối</h2>
-     <div class="flex justify-center">
-      <svg id="flowchart" viewbox="0 0 400 480" class="w-full max-w-md"><!-- Arrows --> <defs>
-        <marker id="arrowhead" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
-         <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
-        </marker>
-        <marker id="arrowhead-green" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
-         <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
-        </marker>
-        <marker id="arrowhead-red" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto">
-         <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
-        </marker>
-       </defs> <!-- Start --> <ellipse id="box-start" cx="200" cy="30" rx="50" ry="22" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" class="flowchart-box" /> <text x="200" y="35" text-anchor="middle" class="text-sm font-semibold fill-blue-700">
-        Start
-       </text> <!-- Arrow: Start -> Input --> <path id="arrow-start-input" d="M200,52 L200,73" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <!-- Input x --> <rect id="box-input" x="130" y="75" width="140" height="40" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="2" class="flowchart-box" /> <text x="200" y="100" text-anchor="middle" class="text-sm font-medium fill-indigo-700">
-        Nhập x
-       </text> <!-- Arrow: Input -> Condition --> <path id="arrow-input-cond" d="M200,115 L200,143" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <!-- Condition Diamond --> <polygon id="box-condition" points="200,145 280,190 200,235 120,190" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" class="flowchart-box" /> <text id="condition-text" x="200" y="186" text-anchor="middle" class="text-xs font-medium fill-amber-800">
-        x % 2 == 0
-       </text> <text x="200" y="200" text-anchor="middle" class="text-xs fill-amber-600" id="condition-value">
-        ?
-       </text> <!-- True Branch --> <text x="285" y="175" class="text-xs font-bold fill-emerald-600">
-        True
-       </text> <path id="arrow-true" d="M280,190 L320,190 L320,270 L270,270" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arrowhead-green)" class="arrow-path" /> <!-- Print Even --> <rect id="box-print-true" x="130" y="255" width="140" height="40" rx="8" fill="#dcfce7" stroke="#22c55e" stroke-width="2" class="flowchart-box" /> <text x="200" y="280" text-anchor="middle" class="text-xs font-medium fill-green-700">
-        print("x là số chẵn")
-       </text> <!-- False Branch --> <text x="85" y="175" class="text-xs font-bold fill-red-500">
-        False
-       </text> <path id="arrow-false-short" d="M120,190 L80,190 L80,420 L150,420" stroke="#ef4444" stroke-width="2" fill="none" marker-end="url(#arrowhead-red)" class="arrow-path" /> <!-- Else block (hidden in short form) --> <g id="else-group" style="display: none;">
-        <path id="arrow-false-full" d="M120,190 L80,190 L80,345 L130,345" stroke="#ef4444" stroke-width="2" fill="none" marker-end="url(#arrowhead-red)" class="arrow-path" />
-        <rect id="box-print-false" x="130" y="325" width="140" height="40" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="2" class="flowchart-box" />
-        <text x="200" y="350" text-anchor="middle" class="text-xs font-medium fill-red-700">
-         print("x là số lẻ")
-        </text>
-        <path id="arrow-else-end" d="M200,365 L200,403" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" />
-       </g> <!-- Arrow: Print True -> End --> <path id="arrow-true-end" d="M200,295 L200,403" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrowhead)" class="arrow-path" /> <!-- End --> <ellipse id="box-end" cx="200" cy="430" rx="50" ry="22" fill="#fecaca" stroke="#ef4444" stroke-width="2" class="flowchart-box" /> <text x="200" y="435" text-anchor="middle" class="text-sm font-semibold fill-red-700">
-        End
-       </text>
-      </svg>
-     </div>
-    </div><!-- Code Column -->
-    <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
-     <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">💻 Code Python</h2>
-     <div id="codeDisplay" class="bg-gray-50 rounded-xl p-4 code-font text-base">
-      <div id="code-line-1" class="code-line">
-       <span class="text-blue-600 font-semibold">if</span> x % 2 == 0:
-      </div>
-      <div id="code-line-2" class="code-line pl-8">
-       <span class="text-purple-600">print</span>(<span class="text-orange-600">"x là số chẵn"</span>)
-      </div>
-      <div id="code-line-3" class="code-line hidden">
-       <span class="text-blue-600 font-semibold">else</span>:
-      </div>
-      <div id="code-line-4" class="code-line pl-8 hidden">
-       <span class="text-purple-600">print</span>(<span class="text-orange-600">"x là số lẻ"</span>)
-      </div>
-     </div><!-- Variable State -->
-     <div class="mt-4 p-3 bg-indigo-50 rounded-xl">
-      <h3 class="font-semibold text-indigo-700 mb-2">📌 Trạng thái biến</h3>
-      <div class="code-font text-sm"><span class="text-gray-600">x = </span> <span id="varX" class="font-bold text-indigo-600">—</span>
-      </div>
-     </div><!-- Console Output -->
-     <div class="mt-4">
-      <h3 class="font-semibold text-gray-700 mb-2">🖥️ Console Output</h3>
-      <div id="consoleOutput" class="bg-gray-900 text-green-400 code-font text-sm p-4 rounded-xl min-h-16 max-h-32 overflow-auto"><span class="text-gray-500">&gt;&gt;&gt; Chờ thực thi...</span>
-      </div>
+   </section><!-- Section 4: Practice -->
+   <section class="section-card p-5">
+    <h2 class="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2">✏️ Phần luyện tập</h2>
+    <div id="quizContainer">
+     <!-- Quiz navigation -->
+     <div class="flex flex-wrap gap-2 mb-4">
+      <span class="font-bold text-gray-600">Câu hỏi:</span> <button onclick="showQuiz(0)" id="qbtn-0" class="w-10 h-10 rounded-full bg-blue-500 text-white font-bold quiz-nav-btn">1</button> <button onclick="showQuiz(1)" id="qbtn-1" class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-bold quiz-nav-btn">2</button> <button onclick="showQuiz(2)" id="qbtn-2" class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-bold quiz-nav-btn">3</button> <button onclick="showQuiz(3)" id="qbtn-3" class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-bold quiz-nav-btn">4</button> <button onclick="showQuiz(4)" id="qbtn-4" class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-bold quiz-nav-btn">5</button> <span id="scoreDisplay" class="ml-auto font-bold text-green-600 text-lg"></span>
+     </div><!-- Quiz content -->
+     <div id="quizContent" class="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl p-5">
+      <!-- Quiz will be rendered here -->
      </div>
     </div>
-   </section><!-- Step Description -->
-   <section class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
-    <h3 class="font-semibold text-gray-700 mb-2">📖 Mô tả bước hiện tại</h3>
-    <div id="stepDescription" class="text-gray-600 bg-gray-50 p-3 rounded-xl">
-     Nhấn "Chạy từng bước" hoặc "Chạy tự động" để bắt đầu.
-    </div>
-   </section>
+   </section><!-- Footer -->
+   <footer class="text-center mt-6 text-gray-500 text-sm">
+    <p>🎓 Học liệu dành cho học sinh THPT | Python cơ bản</p>
+   </footer>
   </div>
   <script>
-    // Configuration
+    // ==================== CONFIG & SDK ====================
     const defaultConfig = {
-      main_title: "🐍 Trực quan hóa câu lệnh rẽ nhánh if trong Python",
-      background_color: "#e0f2fe",
-      primary_color: "#3b82f6",
-      text_color: "#1e3a5a",
-      accent_color: "#10b981",
-      secondary_color: "#f59e0b"
+      page_title: "🐍 Trực quan hóa câu lệnh rẽ nhánh IF trong Python",
+      theory_title: "📚 Tóm tắt lý thuyết",
+      background_color: "#eff6ff",
+      primary_color: "#1e40af",
+      accent_color: "#3b82f6",
+      text_color: "#1e293b",
+      secondary_color: "#64748b"
     };
 
-    // State
-    let stepIndex = 0;
-    let isFullForm = false;
-    let autoInterval = null;
-    let xValue = 5;
-    let conditionResult = null;
+    let config = { ...defaultConfig };
 
-    // Elements
-    const inputX = document.getElementById('inputX');
-    const btnStep = document.getElementById('btnStep');
-    const btnAuto = document.getElementById('btnAuto');
-    const btnReset = document.getElementById('btnReset');
-    const btnToggle = document.getElementById('btnToggle');
-    const calcResult = document.getElementById('calcResult');
-    const stepNum = document.getElementById('stepNum');
-    const varX = document.getElementById('varX');
-    const consoleOutput = document.getElementById('consoleOutput');
-    const stepDescription = document.getElementById('stepDescription');
-    const conditionValue = document.getElementById('condition-value');
-
-    // Flowchart elements
-    const boxes = {
-      start: document.getElementById('box-start'),
-      input: document.getElementById('box-input'),
-      condition: document.getElementById('box-condition'),
-      printTrue: document.getElementById('box-print-true'),
-      printFalse: document.getElementById('box-print-false'),
-      end: document.getElementById('box-end')
-    };
-
-    const arrows = {
-      startInput: document.getElementById('arrow-start-input'),
-      inputCond: document.getElementById('arrow-input-cond'),
-      true: document.getElementById('arrow-true'),
-      falseShort: document.getElementById('arrow-false-short'),
-      falseFull: document.getElementById('arrow-false-full'),
-      trueEnd: document.getElementById('arrow-true-end'),
-      elseEnd: document.getElementById('arrow-else-end')
-    };
-
-    const codeLines = {
-      1: document.getElementById('code-line-1'),
-      2: document.getElementById('code-line-2'),
-      3: document.getElementById('code-line-3'),
-      4: document.getElementById('code-line-4')
-    };
-
-    // Step descriptions
-    const stepDescriptions = {
-      0: "Nhấn 'Chạy từng bước' hoặc 'Chạy tự động' để bắt đầu.",
-      1: "🚀 <strong>Bước 1:</strong> Bắt đầu chương trình (Start)",
-      2: "📥 <strong>Bước 2:</strong> Nhập giá trị x từ người dùng",
-      3: "🔍 <strong>Bước 3:</strong> Kiểm tra điều kiện x % 2 == 0",
-      4: "✅ <strong>Bước 4:</strong> Điều kiện đúng (True) → Thực hiện nhánh if",
-      5: "❌ <strong>Bước 4:</strong> Điều kiện sai (False) → Bỏ qua nhánh if",
-      6: "🖨️ <strong>Bước 5:</strong> In ra 'x là số chẵn'",
-      7: "🖨️ <strong>Bước 5:</strong> In ra 'x là số lẻ'",
-      8: "🏁 <strong>Bước 6:</strong> Kết thúc chương trình (End)"
-    };
-
-    // Get total steps based on form type and condition
-    function getTotalSteps() {
-      return 6;
+    async function onConfigChange(cfg) {
+      config = { ...defaultConfig, ...cfg };
+      
+      document.getElementById('pageTitle').textContent = config.page_title;
+      document.getElementById('theoryTitle').textContent = config.theory_title;
+      document.body.style.background = `linear-gradient(135deg, ${config.background_color} 0%, #e0f2fe 100%)`;
     }
 
-    // Clear all highlights
-    function clearHighlights() {
-      Object.values(boxes).forEach(box => {
-        if (box) {
-          box.classList.remove('active');
-          box.style.fill = '';
-        }
-      });
-      
-      Object.values(arrows).forEach(arrow => {
-        if (arrow) arrow.classList.remove('active');
-      });
-      
-      Object.values(codeLines).forEach(line => {
-        if (line) line.classList.remove('highlight');
-      });
-    }
-
-    // Highlight a box
-    function highlightBox(boxId, color = '#fef08a') {
-      const box = boxes[boxId];
-      if (box) {
-        box.classList.add('active');
-        if (box.tagName === 'ellipse' || box.tagName === 'rect') {
-          box.style.fill = color;
-        } else if (box.tagName === 'polygon') {
-          box.style.fill = color;
-        }
-      }
-    }
-
-    // Highlight arrow
-    function highlightArrow(arrowId) {
-      const arrow = arrows[arrowId];
-      if (arrow) arrow.classList.add('active');
-    }
-
-    // Highlight code line
-    function highlightCodeLine(lineNum) {
-      const line = codeLines[lineNum];
-      if (line) line.classList.add('highlight');
-    }
-
-    // Update step display
-    function updateStepDisplay(current, total) {
-      stepNum.textContent = `${current}/${total}`;
-    }
-
-    // Execute step
-    function executeStep() {
-      xValue = parseInt(inputX.value) || 0;
-      conditionResult = xValue % 2 === 0;
-      
-      clearHighlights();
-      
-      const totalSteps = getTotalSteps();
-      
-      switch(stepIndex) {
-        case 0:
-          stepDescription.innerHTML = stepDescriptions[0];
-          updateStepDisplay(0, totalSteps);
-          break;
-          
-        case 1: // Start
-          highlightBox('start', '#93c5fd');
-          stepDescription.innerHTML = stepDescriptions[1];
-          updateStepDisplay(1, totalSteps);
-          break;
-          
-        case 2: // Input x
-          highlightBox('input', '#a5b4fc');
-          highlightArrow('startInput');
-          varX.textContent = xValue;
-          stepDescription.innerHTML = stepDescriptions[2];
-          updateStepDisplay(2, totalSteps);
-          break;
-          
-        case 3: // Check condition
-          highlightBox('condition', '#fde047');
-          highlightArrow('inputCond');
-          calcResult.textContent = `${xValue} % 2 == 0 → ${conditionResult}`;
-          calcResult.className = `code-font font-semibold ${conditionResult ? 'text-emerald-600' : 'text-red-500'}`;
-          conditionValue.textContent = conditionResult ? 'True' : 'False';
-          conditionValue.className = `text-xs ${conditionResult ? 'fill-emerald-600' : 'fill-red-500'}`;
-          highlightCodeLine(1);
-          stepDescription.innerHTML = stepDescriptions[3];
-          updateStepDisplay(3, totalSteps);
-          break;
-          
-        case 4: // Branch
-          highlightBox('condition', '#fde047');
-          if (conditionResult) {
-            highlightArrow('true');
-            stepDescription.innerHTML = stepDescriptions[4];
-          } else {
-            if (isFullForm) {
-              highlightArrow('falseFull');
-            } else {
-              highlightArrow('falseShort');
-            }
-            stepDescription.innerHTML = stepDescriptions[5];
-          }
-          updateStepDisplay(4, totalSteps);
-          break;
-          
-        case 5: // Print
-          if (conditionResult) {
-            highlightBox('printTrue', '#86efac');
-            highlightCodeLine(2);
-            consoleOutput.innerHTML = `<span class="text-green-400">>>> x là số chẵn</span>`;
-            stepDescription.innerHTML = stepDescriptions[6];
-          } else if (isFullForm) {
-            highlightBox('printFalse', '#fca5a5');
-            highlightCodeLine(4);
-            consoleOutput.innerHTML = `<span class="text-green-400">>>> x là số lẻ</span>`;
-            stepDescription.innerHTML = stepDescriptions[7];
-          } else {
-            // Skip to end in short form when condition is false
-            highlightBox('end', '#fca5a5');
-            highlightArrow('falseShort');
-            stepDescription.innerHTML = stepDescriptions[8];
-          }
-          updateStepDisplay(5, totalSteps);
-          break;
-          
-        case 6: // End
-          highlightBox('end', '#fca5a5');
-          if (conditionResult) {
-            highlightArrow('trueEnd');
-          } else if (isFullForm) {
-            highlightArrow('elseEnd');
-          }
-          stepDescription.innerHTML = stepDescriptions[8];
-          updateStepDisplay(6, totalSteps);
-          
-          // Stop auto if running
-          if (autoInterval) {
-            clearInterval(autoInterval);
-            autoInterval = null;
-            btnAuto.innerHTML = '⏩ Chạy tự động';
-          }
-          break;
-      }
-    }
-
-    // Reset
-    function reset() {
-      stepIndex = 0;
-      clearHighlights();
-      calcResult.textContent = '—';
-      calcResult.className = 'code-font font-semibold';
-      varX.textContent = '—';
-      conditionValue.textContent = '?';
-      conditionValue.className = 'text-xs fill-amber-600';
-      consoleOutput.innerHTML = '<span class="text-gray-500">>>> Chờ thực thi...</span>';
-      stepDescription.innerHTML = stepDescriptions[0];
-      updateStepDisplay(0, getTotalSteps());
-      
-      if (autoInterval) {
-        clearInterval(autoInterval);
-        autoInterval = null;
-        btnAuto.innerHTML = '⏩ Chạy tự động';
-      }
-    }
-
-    // Toggle form type
-    function toggleForm() {
-      isFullForm = !isFullForm;
-      
-      const elseGroup = document.getElementById('else-group');
-      const arrowFalseShort = document.getElementById('arrow-false-short');
-      const arrowTrueEnd = document.getElementById('arrow-true-end');
-      
-      if (isFullForm) {
-        // Full form
-        btnToggle.innerHTML = '🔀 Dạng đầy đủ';
-        elseGroup.style.display = 'block';
-        arrowFalseShort.style.display = 'none';
-        arrowTrueEnd.setAttribute('d', 'M200,295 L200,310 L320,310 L320,400 L250,400');
-        codeLines[3].classList.remove('hidden');
-        codeLines[4].classList.remove('hidden');
-      } else {
-        // Short form
-        btnToggle.innerHTML = '🔀 Dạng thiếu';
-        elseGroup.style.display = 'none';
-        arrowFalseShort.style.display = 'block';
-        arrowTrueEnd.setAttribute('d', 'M200,295 L200,403');
-        codeLines[3].classList.add('hidden');
-        codeLines[4].classList.add('hidden');
-      }
-      
-      reset();
-    }
-
-    // Event listeners
-    btnStep.addEventListener('click', () => {
-      if (stepIndex < 6) {
-        stepIndex++;
-        executeStep();
-      }
-    });
-
-    btnAuto.addEventListener('click', () => {
-      if (autoInterval) {
-        clearInterval(autoInterval);
-        autoInterval = null;
-        btnAuto.innerHTML = '⏩ Chạy tự động';
-      } else {
-        if (stepIndex >= 6) reset();
-        btnAuto.innerHTML = '⏸️ Tạm dừng';
-        autoInterval = setInterval(() => {
-          if (stepIndex < 6) {
-            stepIndex++;
-            executeStep();
-          } else {
-            clearInterval(autoInterval);
-            autoInterval = null;
-            btnAuto.innerHTML = '⏩ Chạy tự động';
-          }
-        }, 1200);
-      }
-    });
-
-    btnReset.addEventListener('click', reset);
-    btnToggle.addEventListener('click', toggleForm);
-
-    inputX.addEventListener('change', () => {
-      if (stepIndex > 0) reset();
-    });
-
-    // Element SDK Integration
-    async function onConfigChange(config) {
-      const title = config.main_title || defaultConfig.main_title;
-      document.getElementById('main-title').innerHTML = title;
-      
-      document.body.style.backgroundColor = config.background_color || defaultConfig.background_color;
-    }
-
-    function mapToCapabilities(config) {
+    function mapToCapabilities(cfg) {
       return {
         recolorables: [
           {
-            get: () => config.background_color || defaultConfig.background_color,
-            set: (value) => { config.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
+            get: () => cfg.background_color || defaultConfig.background_color,
+            set: (v) => { cfg.background_color = v; window.elementSdk?.setConfig({ background_color: v }); }
           },
           {
-            get: () => config.primary_color || defaultConfig.primary_color,
-            set: (value) => { config.primary_color = value; window.elementSdk.setConfig({ primary_color: value }); }
+            get: () => cfg.primary_color || defaultConfig.primary_color,
+            set: (v) => { cfg.primary_color = v; window.elementSdk?.setConfig({ primary_color: v }); }
           },
           {
-            get: () => config.text_color || defaultConfig.text_color,
-            set: (value) => { config.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
+            get: () => cfg.accent_color || defaultConfig.accent_color,
+            set: (v) => { cfg.accent_color = v; window.elementSdk?.setConfig({ accent_color: v }); }
           },
           {
-            get: () => config.accent_color || defaultConfig.accent_color,
-            set: (value) => { config.accent_color = value; window.elementSdk.setConfig({ accent_color: value }); }
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (v) => { cfg.text_color = v; window.elementSdk?.setConfig({ text_color: v }); }
           },
           {
-            get: () => config.secondary_color || defaultConfig.secondary_color,
-            set: (value) => { config.secondary_color = value; window.elementSdk.setConfig({ secondary_color: value }); }
+            get: () => cfg.secondary_color || defaultConfig.secondary_color,
+            set: (v) => { cfg.secondary_color = v; window.elementSdk?.setConfig({ secondary_color: v }); }
           }
         ],
         borderables: [],
@@ -533,13 +346,13 @@
       };
     }
 
-    function mapToEditPanelValues(config) {
+    function mapToEditPanelValues(cfg) {
       return new Map([
-        ["main_title", config.main_title || defaultConfig.main_title]
+        ["page_title", cfg.page_title || defaultConfig.page_title],
+        ["theory_title", cfg.theory_title || defaultConfig.theory_title]
       ]);
     }
 
-    // Initialize
     if (window.elementSdk) {
       window.elementSdk.init({
         defaultConfig,
@@ -549,8 +362,381 @@
       });
     }
 
-    // Initial state
-    reset();
+    // ==================== EXECUTION STATE ====================
+    let currentTab = 'thieu';
+    let currentStep = 0;
+    let isRunning = false;
+    let autoRunInterval = null;
+
+    // Steps for dạng thiếu
+    const stepsThieu = [
+      { nodes: ['node-start-t'], arrows: ['arrow1-t'], code: 'code-t-1', output: '' },
+      { nodes: ['node-input-t'], arrows: ['arrow2-t'], code: 'code-t-1', output: '' },
+      { nodes: ['node-condition-t'], arrows: [], code: 'code-t-2', output: '', checkCondition: true },
+      { nodes: ['node-print-t'], arrows: ['arrow3-t'], code: 'code-t-3', output: '', isTrue: true },
+      { nodes: ['node-end-t'], arrows: [], code: null, output: '', final: true }
+    ];
+
+    // Steps for dạng đủ  
+    const stepsDu = [
+      { nodes: ['node-start-d'], arrows: ['arrow1-d'], code: 'code-d-1', output: '' },
+      { nodes: ['node-input-d'], arrows: ['arrow2-d'], code: 'code-d-1', output: '' },
+      { nodes: ['node-condition-d'], arrows: [], code: 'code-d-2', output: '', checkCondition: true },
+      { nodes: ['node-print-chan-d'], arrows: ['arrow3-d'], code: 'code-d-3', output: '', isTrue: true },
+      { nodes: ['node-print-le-d'], arrows: ['arrow4-d'], code: 'code-d-5', output: '', isFalse: true },
+      { nodes: ['node-end-d'], arrows: [], code: null, output: '', final: true }
+    ];
+
+    // ==================== TAB SWITCHING ====================
+    function switchTab(tab) {
+      currentTab = tab;
+      resetExecution();
+      
+      document.getElementById('tabThieu').classList.toggle('active', tab === 'thieu');
+      document.getElementById('tabDu').classList.toggle('active', tab === 'du');
+      document.getElementById('tabThieu').classList.toggle('bg-gray-200', tab !== 'thieu');
+      document.getElementById('tabDu').classList.toggle('bg-gray-200', tab !== 'du');
+      
+      document.getElementById('flowchartThieu').classList.toggle('hidden', tab !== 'thieu');
+      document.getElementById('flowchartDu').classList.toggle('hidden', tab !== 'du');
+      document.getElementById('codeThieu').classList.toggle('hidden', tab !== 'thieu');
+      document.getElementById('codeDu').classList.toggle('hidden', tab !== 'du');
+    }
+
+    // ==================== EXECUTION FUNCTIONS ====================
+    function clearHighlights() {
+      // Clear nodes
+      document.querySelectorAll('.flowchart-node').forEach(n => n.classList.remove('active'));
+      // Clear arrows
+      document.querySelectorAll('.arrow-path').forEach(a => a.classList.remove('animating'));
+      // Clear code
+      document.querySelectorAll('.code-line').forEach(c => c.classList.remove('active'));
+    }
+
+    function getXValue() {
+      return parseInt(document.getElementById('inputX').value) || 0;
+    }
+
+    function updateXDisplay() {
+      const x = getXValue();
+      const suffixT = 't';
+      const suffixD = 'd';
+      document.getElementById(`code-x-value-${suffixT}`).textContent = x;
+      document.getElementById(`code-x-value-${suffixD}`).textContent = x;
+      document.getElementById(`input-x-value-${suffixT}`).textContent = x;
+      document.getElementById(`input-x-value-${suffixD}`).textContent = x;
+    }
+
+    function stepExecution() {
+      if (isRunning) return;
+      
+      updateXDisplay();
+      const x = getXValue();
+      const isEven = x % 2 === 0;
+      const steps = currentTab === 'thieu' ? stepsThieu : stepsDu;
+      const suffix = currentTab === 'thieu' ? 't' : 'd';
+      
+      clearHighlights();
+      
+      if (currentStep >= steps.length) {
+        currentStep = 0;
+        document.getElementById('outputText').textContent = '';
+        return;
+      }
+      
+      const step = steps[currentStep];
+      
+      // Handle condition step
+      if (step.checkCondition) {
+        step.nodes.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('active');
+        });
+        
+        if (step.code) {
+          const codeEl = document.getElementById(step.code);
+          if (codeEl) codeEl.classList.add('active');
+        }
+        
+        // Highlight the correct branch arrow
+        if (isEven) {
+          const trueArrow = document.getElementById(`arrow-true-${suffix}`);
+          if (trueArrow) trueArrow.classList.add('animating');
+        } else {
+          const falseArrow = document.getElementById(`arrow-false-${suffix}`);
+          if (falseArrow) falseArrow.classList.add('animating');
+        }
+        
+        currentStep++;
+        
+        // Skip to correct branch
+        if (currentTab === 'thieu') {
+          if (!isEven) {
+            // Skip print step, go to end
+            currentStep = steps.length - 1;
+          }
+        } else {
+          // Dạng đủ - skip to the right print step
+          if (isEven) {
+            currentStep = 3; // print chẵn
+          } else {
+            currentStep = 4; // print lẻ
+          }
+        }
+        return;
+      }
+      
+      // Handle print steps
+      if (step.isTrue && !isEven) {
+        currentStep++;
+        stepExecution();
+        return;
+      }
+      
+      if (step.isFalse && isEven) {
+        currentStep++;
+        stepExecution();
+        return;
+      }
+      
+      // Highlight current step
+      step.nodes.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('active');
+      });
+      
+      step.arrows.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('animating');
+      });
+      
+      if (step.code) {
+        const codeEl = document.getElementById(step.code);
+        if (codeEl) codeEl.classList.add('active');
+      }
+      
+      // Show output for print steps
+      if (step.isTrue || step.isFalse) {
+        const output = isEven ? 'x là số chẵn' : 'x là số lẻ';
+        document.getElementById('outputText').textContent = output;
+      }
+      
+      if (step.final) {
+        // Show final output if not already shown
+        const output = currentTab === 'thieu' 
+          ? (isEven ? 'x là số chẵn' : '') 
+          : (isEven ? 'x là số chẵn' : 'x là số lẻ');
+        if (!document.getElementById('outputText').textContent) {
+          document.getElementById('outputText').textContent = output;
+        }
+      }
+      
+      currentStep++;
+    }
+
+    function runAuto() {
+      if (isRunning) {
+        stopAuto();
+        return;
+      }
+      
+      resetExecution();
+      isRunning = true;
+      
+      autoRunInterval = setInterval(() => {
+        const steps = currentTab === 'thieu' ? stepsThieu : stepsDu;
+        if (currentStep >= steps.length) {
+          stopAuto();
+          return;
+        }
+        stepExecution();
+      }, 1000);
+    }
+
+    function stopAuto() {
+      isRunning = false;
+      if (autoRunInterval) {
+        clearInterval(autoRunInterval);
+        autoRunInterval = null;
+      }
+    }
+
+    function resetExecution() {
+      stopAuto();
+      currentStep = 0;
+      clearHighlights();
+      document.getElementById('outputText').textContent = '';
+      updateXDisplay();
+    }
+
+    // Update X display on input change
+    document.getElementById('inputX').addEventListener('input', () => {
+      resetExecution();
+    });
+
+    // ==================== QUIZ SYSTEM ====================
+    const quizzes = [
+      {
+        question: "Cho x = 7. Kết quả của đoạn code sau là gì?",
+        code: `x = 7
+if x > 5:
+    print("Lớn hơn 5")`,
+        options: ["Lớn hơn 5", "Không in gì", "Lỗi", "5"],
+        correct: 0,
+        explanation: "x = 7 > 5 nên điều kiện đúng, in ra 'Lớn hơn 5'"
+      },
+      {
+        question: "Cho x = -3. Kết quả của đoạn code sau là gì?",
+        code: `x = -3
+if x >= 0:
+    print("Số dương")
+else:
+    print("Số âm")`,
+        options: ["Số dương", "Số âm", "Không in gì", "Lỗi"],
+        correct: 1,
+        explanation: "x = -3 < 0 nên điều kiện sai, thực hiện else: in 'Số âm'"
+      },
+      {
+        question: "Đoạn code nào kiểm tra xem x có phải số chẵn không?",
+        code: "",
+        options: [
+          "if x / 2 == 0:",
+          "if x % 2 == 0:",
+          "if x == 2:",
+          "if x % 2 == 1:"
+        ],
+        correct: 1,
+        explanation: "x % 2 == 0 kiểm tra số dư khi chia cho 2, nếu bằng 0 thì là số chẵn"
+      },
+      {
+        question: "Cho x = 10. Dòng nào sẽ được thực hiện?",
+        code: `x = 10
+if x < 10:
+    print("A")    # Dòng 1
+else:
+    print("B")    # Dòng 2`,
+        options: ["Dòng 1", "Dòng 2", "Cả hai dòng", "Không dòng nào"],
+        correct: 1,
+        explanation: "x = 10 không nhỏ hơn 10 nên điều kiện sai, thực hiện else (Dòng 2)"
+      },
+      {
+        question: "Điền vào chỗ trống để kiểm tra x có phải số âm không:",
+        code: `x = -5
+if _____:
+    print("Số âm")`,
+        options: ["x > 0", "x < 0", "x == 0", "x >= 0"],
+        correct: 1,
+        explanation: "Để kiểm tra số âm, ta cần điều kiện x < 0"
+      }
+    ];
+
+    let currentQuiz = 0;
+    let score = 0;
+    let answered = new Array(quizzes.length).fill(false);
+    let userAnswers = new Array(quizzes.length).fill(null);
+
+    function showQuiz(index) {
+      currentQuiz = index;
+      const quiz = quizzes[index];
+      
+      // Update nav buttons
+      document.querySelectorAll('.quiz-nav-btn').forEach((btn, i) => {
+        btn.classList.remove('bg-blue-500', 'text-white', 'bg-green-500', 'bg-red-500');
+        if (i === index) {
+          btn.classList.add('bg-blue-500', 'text-white');
+        } else if (answered[i]) {
+          btn.classList.add(userAnswers[i] === quizzes[i].correct ? 'bg-green-500' : 'bg-red-500', 'text-white');
+        } else {
+          btn.classList.add('bg-gray-300', 'text-gray-600');
+        }
+      });
+      
+      let html = `
+        <div class="mb-4">
+          <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">Câu ${index + 1}/5</span>
+        </div>
+        <h3 class="text-lg font-bold text-gray-800 mb-4">${quiz.question}</h3>
+      `;
+      
+      if (quiz.code) {
+        html += `
+          <div class="bg-amber-100 rounded-xl p-4 mb-4 code-font text-base border-2 border-amber-200">
+            <pre class="text-gray-800 whitespace-pre-wrap">${quiz.code}</pre>
+          </div>
+        `;
+      }
+      
+      html += `<div class="space-y-3">`;
+      
+      quiz.options.forEach((opt, i) => {
+        let optClass = 'quiz-option bg-white p-4 rounded-xl border-2 border-gray-200 cursor-pointer font-medium';
+        let disabled = '';
+        
+        if (answered[index]) {
+          disabled = 'pointer-events-none';
+          if (i === quiz.correct) {
+            optClass = 'quiz-option correct p-4 rounded-xl font-medium';
+          } else if (i === userAnswers[index]) {
+            optClass = 'quiz-option incorrect p-4 rounded-xl font-medium';
+          }
+        }
+        
+        html += `
+          <div onclick="selectAnswer(${i})" class="${optClass} ${disabled}">
+            <span class="inline-block w-8 h-8 rounded-full bg-gray-200 text-center leading-8 mr-3 font-bold">${String.fromCharCode(65 + i)}</span>
+            ${opt}
+          </div>
+        `;
+      });
+      
+      html += `</div>`;
+      
+      if (answered[index]) {
+        html += `
+          <div class="mt-4 p-4 rounded-xl ${userAnswers[index] === quiz.correct ? 'bg-green-100 border-2 border-green-300' : 'bg-red-100 border-2 border-red-300'}">
+            <p class="font-bold ${userAnswers[index] === quiz.correct ? 'text-green-700' : 'text-red-700'}">
+              ${userAnswers[index] === quiz.correct ? '✅ Chính xác!' : '❌ Chưa đúng!'}
+            </p>
+            <p class="text-gray-700 mt-2">💡 ${quiz.explanation}</p>
+          </div>
+        `;
+        
+        if (index < quizzes.length - 1) {
+          html += `
+            <button onclick="showQuiz(${index + 1})" class="mt-4 bg-blue-500 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-600 transition-colors">
+              Câu tiếp theo →
+            </button>
+          `;
+        }
+      }
+      
+      document.getElementById('quizContent').innerHTML = html;
+      updateScore();
+    }
+
+    function selectAnswer(optionIndex) {
+      if (answered[currentQuiz]) return;
+      
+      answered[currentQuiz] = true;
+      userAnswers[currentQuiz] = optionIndex;
+      
+      if (optionIndex === quizzes[currentQuiz].correct) {
+        score++;
+      }
+      
+      showQuiz(currentQuiz);
+    }
+
+    function updateScore() {
+      const answeredCount = answered.filter(a => a).length;
+      if (answeredCount > 0) {
+        document.getElementById('scoreDisplay').textContent = `Điểm: ${score}/${answeredCount}`;
+      }
+    }
+
+    // Initialize
+    showQuiz(0);
+    updateXDisplay();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d6eae46a07281d4',t:'MTc3MjYwNDIzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d7d4caf407ffd03',t:'MTc3Mjc1NzUyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
