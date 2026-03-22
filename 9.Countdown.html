@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock with Countdown Timer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .clock-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .time-display {
+            font-size: 3.5rem;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .countdown-display {
+            font-size: 4rem;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: text;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .countdown-display:hover, .countdown-display:focus {
+            border-color: #818cf8;
+            outline: none;
+        }
+        
+        .preset-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .preset-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .preset-btn:active {
+            transform: translateY(1px);
+        }
+        
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.8;
+            }
+            80%, 100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+        
+        .alarm-ring {
+            position: relative;
+        }
+        
+        .alarm-ring::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 5px solid #ef4444;
+            border-radius: 20px;
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container w-11/12 max-w-2xl p-8" id="main-container">
+        <!-- Current Time Display -->
+        <div class="mb-8 text-center">
+            <h2 class="text-xl font-bold text-gray-700 mb-2">namny.net - 0984.642.505</h2>
+            <div id="current-time" class="time-display font-bold text-indigo-800"></div>
+        </div>
+        
+        <!-- Countdown Timer -->
+        <div class="mb-8">
+            <h2 class="text-xl font-bold text-gray-700 mb-4 text-center">Countdown Timer</h2>
+            <div class="text-center mb-6">
+                <input id="countdown" class="countdown-display font-bold text-center text-indigo-600 bg-transparent w-full" value="00:00">
+                <p class="text-sm text-gray-600 mt-1">Click to edit, press Enter to start</p>
+            </div>
+            
+            <!-- Preset Buttons -->
+            <div class="grid grid-cols-5 gap-2 mb-6">
+                <button class="preset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg" data-minutes="1">1 min</button>
+                <button class="preset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg" data-minutes="2">2 min</button>
+                <button class="preset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg" data-minutes="3">3 min</button>
+                <button class="preset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg" data-minutes="5">5 min</button>
+                <button class="preset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg" data-minutes="10">10 min</button>
+            </div>
+            
+            <!-- Control Buttons -->
+            <div class="flex justify-center gap-4">
+                <button id="pause-resume" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg" disabled>Pause</button>
+                <button id="reset" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg" disabled>Reset</button>
+                <button id="stop-alarm" class="hidden bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg">Stop Alarm</button>
+            </div>
+        </div>
+        
+        <!-- Status Message -->
+        <div id="status-message" class="text-center text-lg font-bold text-gray-700"></div>
+        
+        <!-- Auto-stop Alarm Setting -->
+        <div class="mt-6 text-center">
+            <label class="inline-flex items-center">
+                <input type="checkbox" id="auto-stop-alarm" class="form-checkbox h-5 w-5 text-indigo-600" checked>
+                <span class="ml-2 text-gray-700">Auto-stop alarm after 4 seconds</span>
+            </label>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const currentTimeEl = document.getElementById('current-time');
+            const countdownEl = document.getElementById('countdown');
+            const presetButtons = document.querySelectorAll('.preset-btn');
+            const pauseResumeBtn = document.getElementById('pause-resume');
+            const resetBtn = document.getElementById('reset');
+            const statusMessageEl = document.getElementById('status-message');
+            const stopAlarmBtn = document.getElementById('stop-alarm');
+            const autoStopAlarmCheckbox = document.getElementById('auto-stop-alarm');
+            const mainContainer = document.getElementById('main-container');
+            
+            // Create alarm sound with external URL
+            const alarmSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
+            alarmSound.preload = 'auto';
+            
+            // Variables
+            let countdownInterval;
+            let alarmTimeout;
+            let totalSeconds = 0;
+            let isRunning = false;
+            let isPaused = false;
+            let isAlarmPlaying = false;
+            
+            // Update current time
+            function updateCurrentTime() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                currentTimeEl.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+            
+            // Format time for countdown display
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+            
+            // Parse time from countdown display
+            function parseTimeInput(timeStr) {
+                const parts = timeStr.split(':');
+                if (parts.length !== 2) return 0;
+                
+                const mins = parseInt(parts[0], 10);
+                const secs = parseInt(parts[1], 10);
+                
+                if (isNaN(mins) || isNaN(secs)) return 0;
+                
+                return (mins * 60) + secs;
+            }
+            
+            // Start countdown
+            function startCountdown(seconds) {
+                // Clear any existing countdown and alarm
+                clearInterval(countdownInterval);
+                clearTimeout(alarmTimeout);
+                stopAlarm();
+                
+                // Set up new countdown
+                totalSeconds = seconds;
+                countdownEl.value = formatTime(totalSeconds);
+                isRunning = true;
+                isPaused = false;
+                
+                // Update UI
+                pauseResumeBtn.textContent = 'Pause';
+                pauseResumeBtn.disabled = false;
+                resetBtn.disabled = false;
+                statusMessageEl.textContent = 'Timer running...';
+                mainContainer.classList.remove('alarm-ring');
+                stopAlarmBtn.classList.add('hidden');
+                
+                // Start interval
+                countdownInterval = setInterval(() => {
+                    if (totalSeconds > 0) {
+                        totalSeconds--;
+                        countdownEl.value = formatTime(totalSeconds);
+                    } else {
+                        clearInterval(countdownInterval);
+                        isRunning = false;
+                        
+                        // Trigger alarm
+                        playAlarm();
+                        
+                        // Update UI
+                        statusMessageEl.textContent = 'Time\'s up!';
+                        pauseResumeBtn.disabled = true;
+                        mainContainer.classList.add('alarm-ring');
+                    }
+                }, 1000);
+            }
+            
+            // Pause or resume countdown
+            function togglePauseResume() {
+                if (!isRunning) return;
+                
+                if (isPaused) {
+                    // Resume
+                    isPaused = false;
+                    pauseResumeBtn.textContent = 'Pause';
+                    statusMessageEl.textContent = 'Timer running...';
+                    
+                    countdownInterval = setInterval(() => {
+                        if (totalSeconds > 0) {
+                            totalSeconds--;
+                            countdownEl.value = formatTime(totalSeconds);
+                        } else {
+                            clearInterval(countdownInterval);
+                            isRunning = false;
+                            
+                            // Trigger alarm
+                            playAlarm();
+                            
+                            // Update UI
+                            statusMessageEl.textContent = 'Time\'s up!';
+                            pauseResumeBtn.disabled = true;
+                            mainContainer.classList.add('alarm-ring');
+                        }
+                    }, 1000);
+                } else {
+                    // Pause
+                    isPaused = true;
+                    pauseResumeBtn.textContent = 'Resume';
+                    statusMessageEl.textContent = 'Timer paused';
+                    clearInterval(countdownInterval);
+                }
+            }
+            
+            // Reset countdown
+            function resetCountdown() {
+                clearInterval(countdownInterval);
+                clearTimeout(alarmTimeout);
+                isRunning = false;
+                isPaused = false;
+                countdownEl.value = '00:00';
+                pauseResumeBtn.disabled = true;
+                resetBtn.disabled = true;
+                pauseResumeBtn.textContent = 'Pause';
+                statusMessageEl.textContent = '';
+                stopAlarm();
+            }
+            
+            // Play alarm sound
+            function playAlarm() {
+                if (isAlarmPlaying) return;
+                
+                isAlarmPlaying = true;
+                stopAlarmBtn.classList.remove('hidden');
+                
+                try {
+                    // Set up alarm to loop if auto-stop is not enabled
+                    alarmSound.loop = !autoStopAlarmCheckbox.checked;
+                    
+                    // Play the alarm
+                    const playPromise = alarmSound.play();
+                    
+                    // Handle promise rejection (happens in some browsers)
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.error("Error playing alarm sound:", error);
+                            // Visual indication even if sound fails
+                            mainContainer.classList.add('alarm-ring');
+                        });
+                    }
+                    
+                    // Auto-stop alarm after 4 seconds if enabled
+                    if (autoStopAlarmCheckbox.checked) {
+                        alarmTimeout = setTimeout(() => {
+                            stopAlarm();
+                            statusMessageEl.textContent = 'Alarm stopped automatically';
+                        }, 4000);
+                    }
+                } catch (error) {
+                    console.error("Error playing alarm sound:", error);
+                    // Visual indication even if sound fails
+                    mainContainer.classList.add('alarm-ring');
+                }
+            }
+            
+            // Stop alarm sound
+            function stopAlarm() {
+                if (!isAlarmPlaying) return;
+                
+                isAlarmPlaying = false;
+                stopAlarmBtn.classList.add('hidden');
+                mainContainer.classList.remove('alarm-ring');
+                clearTimeout(alarmTimeout);
+                
+                try {
+                    alarmSound.pause();
+                    alarmSound.currentTime = 0;
+                } catch (error) {
+                    console.error("Error stopping alarm sound:", error);
+                }
+            }
+            
+            // Event listeners
+            presetButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const minutes = parseInt(button.dataset.minutes);
+                    startCountdown(minutes * 60);
+                });
+            });
+            
+            countdownEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const seconds = parseTimeInput(countdownEl.value);
+                    if (seconds > 0) {
+                        startCountdown(seconds);
+                    } else {
+                        statusMessageEl.textContent = 'Please enter a valid time (MM:SS)';
+                        countdownEl.value = '00:00';
+                    }
+                }
+            });
+            
+            pauseResumeBtn.addEventListener('click', togglePauseResume);
+            resetBtn.addEventListener('click', resetCountdown);
+            stopAlarmBtn.addEventListener('click', stopAlarm);
+            
+            // Initialize
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            
+            // Make sure the alarm is loaded
+            alarmSound.load();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95f690e1056dec6e',t:'MTc1MjU1NDI2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

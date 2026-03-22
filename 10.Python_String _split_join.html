@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="vi" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Split &amp; Join Explorer</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&amp;family=Fira+Code:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Baloo 2', cursive; }
+    .code-font { font-family: 'Fira Code', monospace; }
+
+    @keyframes popIn {
+      0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+      60% { transform: scale(1.15) rotate(2deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes slideDown {
+      0% { transform: translateY(-30px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes scissorSnip {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(-15deg); }
+      50% { transform: rotate(15deg); }
+      75% { transform: rotate(-10deg); }
+      100% { transform: rotate(0deg); }
+    }
+    @keyframes glueWiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-8deg); }
+      75% { transform: rotate(8deg); }
+    }
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes rainbowBg {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .pop-in { animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    .slide-down { animation: slideDown 0.4s ease-out forwards; }
+    .bounce-hover:hover { animation: bounce 0.5s ease infinite; }
+    .scissor-anim { animation: scissorSnip 0.6s ease; }
+    .glue-anim { animation: glueWiggle 0.5s ease; }
+
+    .string-box {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 3px solid #f59e0b;
+      border-radius: 16px;
+      padding: 12px 20px;
+      position: relative;
+    }
+    .string-box::before, .string-box::after {
+      content: '"';
+      font-size: 2em;
+      font-weight: 800;
+      color: #d97706;
+      line-height: 1;
+    }
+
+    .list-bracket {
+      font-size: 2.5em;
+      font-weight: 800;
+      color: #7c3aed;
+      line-height: 1;
+    }
+
+    .word-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.1em;
+      transition: all 0.3s ease;
+      cursor: default;
+      position: relative;
+    }
+    .word-chip:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    .chip-colors-0 { background: #fecaca; color: #991b1b; border: 2px solid #f87171; }
+    .chip-colors-1 { background: #bbf7d0; color: #166534; border: 2px solid #4ade80; }
+    .chip-colors-2 { background: #bfdbfe; color: #1e40af; border: 2px solid #60a5fa; }
+    .chip-colors-3 { background: #e9d5ff; color: #6b21a8; border: 2px solid #a78bfa; }
+    .chip-colors-4 { background: #fed7aa; color: #9a3412; border: 2px solid #fb923c; }
+    .chip-colors-5 { background: #fce7f3; color: #9d174d; border: 2px solid #f472b6; }
+
+    .separator-marker {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: white;
+      font-weight: 800;
+      font-size: 1.2em;
+      flex-shrink: 0;
+    }
+
+    .comma-sep {
+      color: #7c3aed;
+      font-size: 1.5em;
+      font-weight: 800;
+      margin: 0 2px;
+    }
+
+    .arrow-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 0;
+      color: #6b7280;
+      font-weight: 600;
+    }
+    .arrow-flow i { color: #8b5cf6; }
+
+    .step-card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 2px solid #e5e7eb;
+      transition: all 0.3s ease;
+    }
+    .step-card:hover {
+      border-color: #a78bfa;
+      box-shadow: 0 8px 30px rgba(139,92,246,0.12);
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      border-radius: 14px 14px 0 0;
+      font-weight: 700;
+      font-size: 1.05em;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-bottom: none;
+      position: relative;
+    }
+    .tab-active {
+      background: white;
+      border-color: #e5e7eb;
+      color: #7c3aed;
+      z-index: 2;
+    }
+    .tab-inactive {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+    .tab-inactive:hover { background: #e5e7eb; }
+
+    .exercise-card {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border: 2px solid #86efac;
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .result-box {
+      min-height: 60px;
+      background: #faf5ff;
+      border: 2px dashed #c4b5fd;
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      padding: 10px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .index-badge {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e1b4b;
+      color: #fbbf24;
+      font-size: 0.65em;
+      padding: 1px 7px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .process-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5em;
+      flex-shrink: 0;
+    }
+
+    .highlight-char {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px; height: 36px;
+      border-radius: 6px;
+      font-weight: 600;
+      margin: 1px;
+      transition: all 0.3s ease;
+    }
+
+    .rainbow-text {
+      background: linear-gradient(90deg, #f87171, #fbbf24, #34d399, #60a5fa, #a78bfa, #f472b6);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbowBg 3s linear infinite;
+    }
+
+    .joined-result {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 3px solid #f59e0b;
+      border-radius: 16px;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 1.2em;
+    }
+
+    .drag-list-item {
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: grab;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    .drag-list-item:active { cursor: grabbing; }
+
+    .mini-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .quiz-option {
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 2px solid #d1d5db;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+    .quiz-option:hover { border-color: #8b5cf6; background: #faf5ff; }
+    .quiz-correct { border-color: #22c55e !important; background: #f0fdf4 !important; }
+    .quiz-wrong { border-color: #ef4444 !important; background: #fef2f2 !important; }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div id="app" class="h-full w-full overflow-auto" style="background: linear-gradient(160deg, #ede9fe 0%, #fae8ff 30%, #fef3c7 60%, #dcfce7 100%);"><!-- Header -->
+   <header class="text-center py-6 px-4">
+    <div class="flex items-center justify-center gap-3 mb-2"><span class="text-4xl">🐍</span>
+     <h1 id="main-title" class="text-3xl md:text-4xl font-extrabold text-gray-800">Ôn tập <span class="rainbow-text">Split &amp; Join</span></h1><span class="text-4xl">✨</span><h1 id="main-title" class="text-3xl md:text-4xl font-extrabold text-gray-800">cùng thầy Hiếu
+    </div>
+    <p class="text-gray-500 font-semibold text-lg">Cắt xâu thành danh sách 🔪 → Xử lý 🛠️ → Nối lại 🧩</p>
+   </header><!-- Tabs -->
+   <div class="max-w-5xl mx-auto px-4">
+    <div class="flex gap-1" id="tab-bar"><button class="tab-btn tab-active" data-tab="split" onclick="switchTab('split')">✂️ Split</button> <button class="tab-btn tab-inactive" data-tab="process" onclick="switchTab('process')">🛠️ Xử lý List</button> <button class="tab-btn tab-inactive" data-tab="join" onclick="switchTab('join')">🧩 Join</button> <button class="tab-btn tab-inactive" data-tab="exercises" onclick="switchTab('exercises')">📝 Bài tập</button>
+    </div>
+   </div><!-- Tab Content -->
+   <div class="max-w-5xl mx-auto px-4 pb-10">
+    <div class="bg-white rounded-b-2xl rounded-tr-2xl border-2 border-t-0 border-gray-200 p-4 md:p-8"><!-- ==================== TAB 1: SPLIT ==================== -->
+     <div id="tab-split"><!-- Interactive Demo -->
+      <div class="step-card mb-6">
+       <div class="flex items-center gap-3 mb-4">
+        <div class="process-icon bg-amber-100 text-amber-600">
+         ✂️
+        </div>
+        <div>
+         <h2 class="text-xl font-extrabold text-gray-800">Bước 1: Nhập xâu (string)</h2>
+         <p class="text-gray-500 text-sm font-medium">Gõ một câu vào ô bên dưới rồi bấm "Cắt!"</p>
+        </div>
+       </div>
+       <div class="flex flex-col sm:flex-row gap-3 mb-4"><input id="split-input" type="text" value="Tôi yêu lập trình Python" class="code-font flex-1 px-4 py-3 rounded-xl border-2 border-amber-300 bg-amber-50 text-lg font-semibold focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-200" placeholder="Nhập câu của bạn...">
+        <div class="flex gap-2"><label class="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-xl text-sm font-semibold text-gray-600"> Dấu tách: <input id="split-sep" type="text" value=" " class="code-font w-16 px-2 py-1 rounded-lg border-2 border-gray-300 text-center font-bold focus:outline-none focus:border-purple-400" placeholder="(space)"> </label> <button onclick="runSplit()" class="btn-primary bg-purple-600 text-white text-lg" id="split-btn"> ✂️ Cắt! </button>
+        </div>
+       </div><!-- Visualization Area -->
+       <div id="split-viz" class="space-y-4"><!-- Will be populated by JS -->
+       </div>
+      </div><!-- Explanation -->
+      <div class="step-card bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
+       <h3 class="text-lg font-extrabold text-purple-800 mb-3">💡 Giải thích dễ hiểu</h3>
+       <div class="space-y-3">
+        <div class="mini-step"><span class="text-2xl">📦</span>
+         <div>
+          <strong class="text-purple-700">Xâu (String)</strong> giống như một <em>hộp chứa chữ</em> — tất cả nằm chung 1 chỗ.
+         </div>
+        </div>
+        <div class="mini-step"><span class="text-2xl">✂️</span>
+         <div>
+          <strong class="text-purple-700">.split()</strong> là chiếc kéo — cắt xâu tại <em>dấu tách</em> (mặc định là dấu cách).
+         </div>
+        </div>
+        <div class="mini-step"><span class="text-2xl">📋</span>
+         <div>
+          <strong class="text-purple-700">List</strong> giống <em>danh sách</em> — mỗi mảnh cắt ra là một phần tử, đánh số từ <span class="code-font bg-indigo-100 px-2 py-0.5 rounded text-indigo-700 font-bold">[0]</span>.
+         </div>
+        </div>
+       </div>
+       <div class="mt-4 p-4 bg-white rounded-xl border border-purple-200">
+        <p class="code-font text-sm font-semibold text-gray-700 mb-1"># Ví dụ:</p>
+        <p class="code-font text-base"><span class="text-purple-600 font-bold">s</span> = <span class="text-amber-600 font-bold">"Tôi yêu Python"</span></p>
+        <p class="code-font text-base"><span class="text-green-600 font-bold">ds</span> = s.<span class="text-red-500 font-bold">split</span>()&nbsp;&nbsp;<span class="text-gray-400"># ds = ["Tôi", "yêu", "Python"]</span></p>
+        <p class="code-font text-base"><span class="text-blue-600 font-bold">print</span>(ds[0])&nbsp;&nbsp;&nbsp;<span class="text-gray-400"># → "Tôi"</span></p>
+       </div>
+      </div>
+     </div><!-- ==================== TAB 2: PROCESS LIST ==================== -->
+     <div id="tab-process" class="hidden">
+      <div class="step-card mb-6">
+       <div class="flex items-center gap-3 mb-4">
+        <div class="process-icon bg-green-100 text-green-600">
+         🛠️
+        </div>
+        <div>
+         <h2 class="text-xl font-extrabold text-gray-800">Bước 2: Xử lý danh sách</h2>
+         <p class="text-gray-500 text-sm font-medium">Sau khi split, ta có thể làm nhiều việc thú vị!</p>
+        </div>
+       </div>
+       <div class="flex flex-col sm:flex-row gap-3 mb-4"><input id="process-input" type="text" value="táo cam chuối xoài nho" class="code-font flex-1 px-4 py-3 rounded-xl border-2 border-green-300 bg-green-50 text-lg font-semibold focus:outline-none focus:border-green-500" placeholder="Nhập xâu..."> <button onclick="runProcess()" class="btn-primary bg-green-600 text-white text-lg">🔄 Xử lý!</button>
+       </div><!-- Process Operations -->
+       <div id="process-viz" class="space-y-4">
+        <div class="text-center text-gray-400 font-semibold py-8">
+         Bấm "Xử lý!" để xem kết quả ✨
+        </div>
+       </div>
+      </div>
+      <div class="step-card bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+       <h3 class="text-lg font-extrabold text-green-800 mb-3">📖 Các thao tác với List</h3>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="mini-step"><span class="code-font text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold whitespace-nowrap">len(ds)</span> <span class="text-sm font-semibold">Đếm số phần tử</span>
+        </div>
+        <div class="mini-step"><span class="code-font text-sm bg-red-100 text-red-700 px-2 py-1 rounded font-bold whitespace-nowrap">ds[0]</span> <span class="text-sm font-semibold">Lấy phần tử đầu tiên</span>
+        </div>
+        <div class="mini-step"><span class="code-font text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded font-bold whitespace-nowrap">ds[-1]</span> <span class="text-sm font-semibold">Lấy phần tử cuối cùng</span>
+        </div>
+        <div class="mini-step"><span class="code-font text-sm bg-amber-100 text-amber-700 px-2 py-1 rounded font-bold whitespace-nowrap">ds.reverse()</span> <span class="text-sm font-semibold">Đảo ngược thứ tự</span>
+        </div>
+        <div class="mini-step"><span class="code-font text-sm bg-green-100 text-green-700 px-2 py-1 rounded font-bold whitespace-nowrap">sorted(ds)</span> <span class="text-sm font-semibold">Sắp xếp A→Z</span>
+        </div>
+        <div class="mini-step"><span class="code-font text-sm bg-pink-100 text-pink-700 px-2 py-1 rounded font-bold whitespace-nowrap">ds.upper()</span> <span class="text-sm font-semibold">Viết HOA từng từ</span>
+        </div>
+       </div>
+      </div>
+     </div><!-- ==================== TAB 3: JOIN ==================== -->
+     <div id="tab-join" class="hidden">
+      <div class="step-card mb-6">
+       <div class="flex items-center gap-3 mb-4">
+        <div class="process-icon bg-blue-100 text-blue-600">
+         🧩
+        </div>
+        <div>
+         <h2 class="text-xl font-extrabold text-gray-800">Bước 3: Nối lại bằng join()</h2>
+         <p class="text-gray-500 text-sm font-medium">Dùng "keo" để dán các mảnh lại thành xâu!</p>
+        </div>
+       </div>
+       <div class="flex flex-col gap-3 mb-4"><input id="join-input" type="text" value="Python rất vui" class="code-font px-4 py-3 rounded-xl border-2 border-blue-300 bg-blue-50 text-lg font-semibold focus:outline-none focus:border-blue-500" placeholder="Nhập xâu gốc...">
+        <div class="flex flex-wrap gap-2 items-center"><span class="font-bold text-gray-600">Chọn keo nối:</span> <button onclick="setJoinSep(' ')" class="join-sep-btn px-4 py-2 rounded-xl border-2 border-blue-300 bg-blue-50 font-bold text-blue-700 hover:bg-blue-100 transition">␣ (space)</button> <button onclick="setJoinSep('-')" class="join-sep-btn px-4 py-2 rounded-xl border-2 border-gray-300 bg-gray-50 font-bold text-gray-700 hover:bg-gray-100 transition">- (gạch)</button> <button onclick="setJoinSep('_')" class="join-sep-btn px-4 py-2 rounded-xl border-2 border-gray-300 bg-gray-50 font-bold text-gray-700 hover:bg-gray-100 transition">_ (gạch dưới)</button> <button onclick="setJoinSep('❤️')" class="join-sep-btn px-4 py-2 rounded-xl border-2 border-gray-300 bg-gray-50 font-bold text-gray-700 hover:bg-gray-100 transition">❤️</button> <button onclick="setJoinSep('⭐')" class="join-sep-btn px-4 py-2 rounded-xl border-2 border-gray-300 bg-gray-50 font-bold text-gray-700 hover:bg-gray-100 transition">⭐</button> <input id="join-custom-sep" type="text" maxlength="5" value="" placeholder="Tự gõ..." class="code-font w-20 px-2 py-2 rounded-xl border-2 border-gray-300 text-center font-bold focus:outline-none focus:border-purple-400" oninput="setJoinSep(this.value)">
+        </div><button onclick="runJoin()" class="btn-primary bg-blue-600 text-white text-lg self-start">🧩 Nối!</button>
+       </div>
+       <div id="join-viz" class="space-y-4">
+        <div class="text-center text-gray-400 font-semibold py-8">
+         Chọn keo và bấm "Nối!" 🧩
+        </div>
+       </div>
+      </div>
+      <div class="step-card bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+       <h3 class="text-lg font-extrabold text-blue-800 mb-3">💡 Giải thích join()</h3>
+       <div class="space-y-3">
+        <div class="mini-step"><span class="text-2xl">🧴</span>
+         <div>
+          <strong class="text-blue-700">"keo".join(list)</strong> — dùng "keo" để <em>dán các mảnh trong list lại</em> thành 1 xâu.
+         </div>
+        </div>
+        <div class="mini-step"><span class="text-2xl">⚠️</span>
+         <div>
+          Lưu ý: <strong>keo nằm trước</strong> .join(), <strong>list nằm trong</strong> ngoặc ().
+         </div>
+        </div>
+       </div>
+       <div class="mt-4 p-4 bg-white rounded-xl border border-blue-200">
+        <p class="code-font text-sm font-semibold text-gray-700 mb-1"># Ví dụ:</p>
+        <p class="code-font text-base"><span class="text-green-600 font-bold">ds</span> = [<span class="text-amber-600">"Tôi"</span>, <span class="text-amber-600">"yêu"</span>, <span class="text-amber-600">"Python"</span>]</p>
+        <p class="code-font text-base"><span class="text-purple-600 font-bold">kq</span> = <span class="text-red-500 font-bold">" "</span>.<span class="text-blue-600 font-bold">join</span>(ds)&nbsp;&nbsp;<span class="text-gray-400"># → "Tôi yêu Python"</span></p>
+        <p class="code-font text-base"><span class="text-purple-600 font-bold">kq2</span> = <span class="text-red-500 font-bold">"-"</span>.<span class="text-blue-600 font-bold">join</span>(ds)&nbsp;&nbsp;<span class="text-gray-400"># → "Tôi-yêu-Python"</span></p>
+       </div>
+      </div>
+     </div><!-- ==================== TAB 4: EXERCISES ==================== -->
+     <div id="tab-exercises" class="hidden">
+      <div class="flex items-center gap-3 mb-5">
+       <div class="process-icon bg-yellow-100 text-yellow-600">
+        📝
+       </div>
+       <h2 class="text-xl font-extrabold text-gray-800">Bài tập thực hành</h2>
+      </div><!-- Exercise 1 -->
+      <div class="exercise-card mb-5" id="ex1">
+       <div class="flex items-center gap-2 mb-3"><span class="bg-green-600 text-white text-sm font-bold px-3 py-1 rounded-full">Bài 1</span> <span class="font-bold text-green-800">Đếm số từ trong câu</span>
+       </div>
+       <p class="text-gray-600 mb-3 font-medium">Cho xâu <span class="code-font bg-white px-2 py-0.5 rounded border font-bold">"con mèo ngồi trên bàn"</span>. Có bao nhiêu từ?</p>
+       <div class="flex flex-wrap gap-2 mb-3"><button onclick="checkQuiz(1, 4, this)" class="quiz-option">4 từ</button> <button onclick="checkQuiz(1, 5, this)" class="quiz-option">5 từ</button> <button onclick="checkQuiz(1, 6, this)" class="quiz-option">6 từ</button>
+       </div>
+       <div id="ex1-result" class="hidden"></div>
+      </div><!-- Exercise 2 -->
+      <div class="exercise-card mb-5 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200" id="ex2">
+       <div class="flex items-center gap-2 mb-3"><span class="bg-blue-600 text-white text-sm font-bold px-3 py-1 rounded-full">Bài 2</span> <span class="font-bold text-blue-800">Tìm từ đầu tiên</span>
+       </div>
+       <p class="text-gray-600 mb-3 font-medium">Cho <span class="code-font bg-white px-2 py-0.5 rounded border font-bold">s = "Hà Nội là thủ đô"</span>. <span class="code-font font-bold">s.split()[0]</span> cho kết quả gì?</p>
+       <div class="flex flex-wrap gap-2 mb-3"><button onclick="checkQuiz(2, 'Hà Nội', this)" class="quiz-option code-font">"Hà Nội"</button> <button onclick="checkQuiz(2, 'Hà', this)" class="quiz-option code-font">"Hà"</button> <button onclick="checkQuiz(2, 'thủ đô', this)" class="quiz-option code-font">"thủ đô"</button>
+       </div>
+       <div id="ex2-result" class="hidden"></div>
+      </div><!-- Exercise 3 -->
+      <div class="exercise-card mb-5 bg-gradient-to-br from-purple-50 to-fuchsia-50 border-purple-200" id="ex3">
+       <div class="flex items-center gap-2 mb-3"><span class="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">Bài 3</span> <span class="font-bold text-purple-800">Đảo ngược các từ</span>
+       </div>
+       <p class="text-gray-600 mb-3 font-medium">Cho <span class="code-font bg-white px-2 py-0.5 rounded border font-bold">"a b c"</span>. Đảo ngược rồi join lại, kết quả?</p>
+       <div class="flex flex-wrap gap-2 mb-3"><button onclick="checkQuiz(3, 'c b a', this)" class="quiz-option code-font">"c b a"</button> <button onclick="checkQuiz(3, 'a b c', this)" class="quiz-option code-font">"a b c"</button> <button onclick="checkQuiz(3, 'cba', this)" class="quiz-option code-font">"cba"</button>
+       </div>
+       <div id="ex3-result" class="hidden"></div>
+      </div><!-- Exercise 4: Interactive -->
+      <div class="exercise-card mb-5 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200" id="ex4">
+       <div class="flex items-center gap-2 mb-3"><span class="bg-amber-600 text-white text-sm font-bold px-3 py-1 rounded-full">Bài 4</span> <span class="font-bold text-amber-800">Thực hành: Viết hoa chữ cái đầu</span>
+       </div>
+       <p class="text-gray-600 mb-3 font-medium">Nhập một câu viết thường, chương trình sẽ viết hoa chữ cái đầu mỗi từ!</p>
+       <div class="flex flex-col sm:flex-row gap-2 mb-3"><input id="ex4-input" type="text" value="nguyễn văn an" class="code-font flex-1 px-3 py-2 rounded-xl border-2 border-amber-300 bg-white font-semibold focus:outline-none focus:border-amber-500" placeholder="Nhập câu viết thường..."> <button onclick="runEx4()" class="btn-primary bg-amber-600 text-white">🔠 Viết hoa!</button>
+       </div>
+       <div id="ex4-viz" class="space-y-3"></div>
+      </div><!-- Exercise 5 -->
+      <div class="exercise-card bg-gradient-to-br from-pink-50 to-rose-50 border-pink-200" id="ex5">
+       <div class="flex items-center gap-2 mb-3"><span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">Bài 5</span> <span class="font-bold text-pink-800">Thực hành: Thay thế dấu tách</span>
+       </div>
+       <p class="text-gray-600 mb-3 font-medium">Biến <span class="code-font bg-white px-2 py-0.5 rounded border font-bold">"2024-01-15"</span> thành <span class="code-font bg-white px-2 py-0.5 rounded border font-bold">"2024/01/15"</span></p>
+       <div class="flex flex-wrap gap-2 mb-3"><button onclick="checkQuiz(5, 'split-join', this)" class="quiz-option"><span class="code-font text-sm">s.split("-")</span> rồi <span class="code-font text-sm">"/".join()</span></button> <button onclick="checkQuiz(5, 'replace', this)" class="quiz-option"><span class="code-font text-sm">s.replace("-","/")</span></button> <button onclick="checkQuiz(5, 'both', this)" class="quiz-option">Cả hai cách đều đúng ✅</button>
+       </div>
+       <div id="ex5-result" class="hidden"></div><button onclick="showEx5Demo()" class="btn-primary bg-pink-600 text-white mt-2 text-sm">👁️ Xem minh họa</button>
+       <div id="ex5-demo" class="hidden mt-3"></div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+  // ============ ELEMENT SDK ============
+  const defaultConfig = {
+    main_title: 'Khám phá Split & Join',
+    background_color: '#ede9fe',
+    surface_color: '#ffffff',
+    text_color: '#1f2937',
+    primary_action_color: '#7c3aed',
+    secondary_action_color: '#059669',
+    font_family: 'Baloo 2',
+    font_size: 16
+  };
+
+  function applyConfig(config) {
+    const t = (k) => config[k] || defaultConfig[k];
+
+    // Title
+    const titleEl = document.getElementById('main-title');
+    if (titleEl) titleEl.innerHTML = t('main_title').replace(/(Split & Join|Split|Join)/gi, '<span class="rainbow-text">$1</span>');
+
+    // Colors
+    const app = document.getElementById('app');
+    app.style.background = `linear-gradient(160deg, ${t('background_color')} 0%, ${adjustColor(t('background_color'), 20)} 50%, ${adjustColor(t('background_color'), 40)} 100%)`;
+
+    document.querySelectorAll('.step-card, .tab-btn.tab-active').forEach(el => {
+      if (!el.classList.contains('bg-gradient-to-br')) el.style.backgroundColor = t('surface_color');
+    });
+
+    document.querySelectorAll('h1, h2, .font-extrabold').forEach(el => {
+      if (!el.closest('.exercise-card') && !el.closest('.step-card.bg-gradient-to-br')) {
+        el.style.color = t('text_color');
+      }
+    });
+
+    document.querySelectorAll('.btn-primary.bg-purple-600, #split-btn').forEach(el => {
+      el.style.backgroundColor = t('primary_action_color');
+    });
+
+    document.querySelectorAll('.btn-primary.bg-green-600, .btn-primary.bg-blue-600').forEach(el => {
+      el.style.backgroundColor = t('secondary_action_color');
+    });
+
+    // Font
+    const font = t('font_family');
+    const baseSize = t('font_size');
+    document.body.style.fontFamily = `${font}, 'Baloo 2', cursive`;
+    document.querySelectorAll('h1').forEach(el => el.style.fontSize = `${baseSize * 2}px`);
+    document.querySelectorAll('h2').forEach(el => el.style.fontSize = `${baseSize * 1.3}px`);
+    document.querySelectorAll('h3').forEach(el => el.style.fontSize = `${baseSize * 1.15}px`);
+    document.querySelectorAll('p, span, div, button, input, label').forEach(el => {
+      if (!el.closest('.code-font') && !el.classList.contains('code-font') && el.tagName !== 'H1' && el.tagName !== 'H2' && el.tagName !== 'H3') {
+        el.style.fontSize = `${baseSize}px`;
+      }
+    });
+  }
+
+  function adjustColor(hex, amount) {
+    hex = hex.replace('#', '');
+    let r = parseInt(hex.substring(0,2), 16);
+    let g = parseInt(hex.substring(2,4), 16);
+    let b = parseInt(hex.substring(4,6), 16);
+    r = Math.min(255, r + amount); g = Math.min(255, g + amount); b = Math.min(255, b + amount);
+    return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+  }
+
+  window.elementSdk.init({
+    defaultConfig,
+    onConfigChange: async (config) => applyConfig(config),
+    mapToCapabilities: (config) => ({
+      recolorables: [
+        { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); }},
+        { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }},
+        { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); }},
+        { get: () => config.primary_action_color || defaultConfig.primary_action_color, set: (v) => { config.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); }},
+        { get: () => config.secondary_action_color || defaultConfig.secondary_action_color, set: (v) => { config.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); }},
+      ],
+      borderables: [],
+      fontEditable: {
+        get: () => config.font_family || defaultConfig.font_family,
+        set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+      },
+      fontSizeable: {
+        get: () => config.font_size || defaultConfig.font_size,
+        set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+      }
+    }),
+    mapToEditPanelValues: (config) => new Map([
+      ['main_title', config.main_title || defaultConfig.main_title]
+    ])
+  });
+
+  // ============ TABS ============
+  function switchTab(tab) {
+    ['split','process','join','exercises'].forEach(t => {
+      document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
+    });
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+      btn.classList.toggle('tab-active', btn.dataset.tab === tab);
+      btn.classList.toggle('tab-inactive', btn.dataset.tab !== tab);
+    });
+  }
+
+  // ============ SPLIT VISUALIZATION ============
+  function runSplit() {
+    const input = document.getElementById('split-input').value;
+    const sep = document.getElementById('split-sep').value || ' ';
+    const viz = document.getElementById('split-viz');
+
+    if (!input.trim()) { viz.innerHTML = '<p class="text-center text-red-400 font-semibold">Vui lòng nhập xâu! 😅</p>'; return; }
+
+    const parts = input.split(sep);
+
+    // Step 1: Show original string with separator highlights
+    let charHtml = '';
+    let partIndex = 0;
+    let charInPart = 0;
+    for (let i = 0; i < input.length; i++) {
+      const isSep = input.substring(i, i + sep.length) === sep;
+      if (isSep && i <= input.length - sep.length) {
+        charHtml += `<span class="highlight-char bg-red-200 text-red-700 font-bold border-2 border-red-400" title="Dấu tách">${sep === ' ' ? '␣' : escapeHtml(sep)}</span>`;
+        i += sep.length - 1;
+        partIndex++;
+        charInPart = 0;
+      } else {
+        const colorIdx = partIndex % 6;
+        charHtml += `<span class="highlight-char chip-colors-${colorIdx}" style="animation: popIn 0.3s ${i * 0.02}s both">${escapeHtml(input[i])}</span>`;
+        charInPart++;
+      }
+    }
+
+    // Step 2: Show code
+    const sepDisplay = sep === ' ' ? '' : `"${escapeHtml(sep)}"`;
+    const codeHtml = `<span class="text-green-600 font-bold">ds</span> = <span class="text-amber-600 font-bold">"${escapeHtml(input)}"</span>.<span class="text-red-500 font-bold">split</span>(${sepDisplay})`;
+
+    // Step 3: Show list result
+    let listHtml = parts.map((p, i) => {
+      const colorIdx = i % 6;
+      return `<span class="word-chip chip-colors-${colorIdx} pop-in" style="animation-delay: ${i * 0.1}s; position: relative;">
+        <span class="index-badge">[${i}]</span>
+        "${escapeHtml(p)}"
+      </span>`;
+    }).join('<span class="comma-sep">,</span>');
+
+    viz.innerHTML = `
+      <div class="space-y-4">
+        <div>
+          <div class="text-sm font-bold text-gray-500 mb-2">🔍 Xâu gốc (đánh dấu nơi cắt):</div>
+          <div class="string-box flex flex-wrap items-center gap-0.5 code-font text-lg">${charHtml}</div>
+        </div>
+        <div class="arrow-flow">
+          <span class="text-2xl scissor-anim">✂️</span>
+          <i data-lucide="arrow-down" style="width:20px;height:20px;"></i>
+          <span class="code-font text-sm font-bold bg-purple-100 text-purple-700 px-3 py-1 rounded-lg">${codeHtml}</span>
+        </div>
+        <div>
+          <div class="text-sm font-bold text-gray-500 mb-2">📋 Kết quả (List):</div>
+          <div class="result-box items-start">
+            <span class="list-bracket">[</span>
+            <div class="flex flex-wrap items-center gap-2 py-2">${listHtml}</div>
+            <span class="list-bracket">]</span>
+          </div>
+        </div>
+        <div class="mini-step bg-amber-50 border-amber-200">
+          <span class="text-xl">📊</span>
+          <div class="text-sm font-semibold">
+            <span class="code-font text-purple-600">len(ds)</span> = <strong>${parts.length}</strong> phần tử
+            &nbsp;|&nbsp; <span class="code-font text-blue-600">ds[0]</span> = <strong>"${escapeHtml(parts[0])}"</strong>
+            &nbsp;|&nbsp; <span class="code-font text-red-600">ds[-1]</span> = <strong>"${escapeHtml(parts[parts.length-1])}"</strong>
+          </div>
+        </div>
+      </div>
+    `;
+    lucide.createIcons();
+  }
+
+  // ============ PROCESS VISUALIZATION ============
+  function runProcess() {
+    const input = document.getElementById('process-input').value;
+    if (!input.trim()) return;
+
+    const parts = input.split(' ').filter(p => p);
+    const viz = document.getElementById('process-viz');
+
+    const original = parts.map((p,i) => chipHtml(p, i)).join(commaHtml());
+    const reversed = [...parts].reverse();
+    const sorted = [...parts].sort();
+    const uppered = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1));
+    const lengths = parts.map(p => `${p}(${p.length})`);
+
+    viz.innerHTML = `
+      <div class="space-y-4">
+        <div class="mini-step border-amber-200 bg-amber-50">
+          <span class="text-xl">📦</span>
+          <div class="flex-1">
+            <div class="text-xs font-bold text-gray-400 mb-1">Danh sách gốc:</div>
+            <div class="flex flex-wrap gap-2 items-center">
+              <span class="list-bracket text-lg">[</span>${original}<span class="list-bracket text-lg">]</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          ${processCard('🔢', 'len(ds)', `${parts.length} phần tử`, 'blue', `Danh sách có <strong>${parts.length}</strong> từ`)}
+          ${processCard('🔄', 'ds[::-1]', 'Đảo ngược', 'amber', listDisplay(reversed))}
+          ${processCard('🔤', 'sorted(ds)', 'Sắp xếp A→Z', 'green', listDisplay(sorted))}
+          ${processCard('🔠', 'capitalize()', 'Viết hoa đầu', 'purple', listDisplay(uppered))}
+          ${processCard('📏', 'len(từ)', 'Độ dài từng từ', 'pink', lengths.map((l,i) => `<span class="word-chip chip-colors-${i%6} text-xs">${escapeHtml(l)}</span>`).join(' '))}
+          ${processCard('✂️', 'ds[1:-1]', 'Bỏ đầu & cuối', 'red', parts.length > 2 ? listDisplay(parts.slice(1,-1)) : '<em class="text-gray-400">Cần ít nhất 3 từ</em>')}
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+          <p class="code-font text-sm font-semibold text-gray-700 mb-1"># Code tổng hợp:</p>
+          <p class="code-font text-sm"><span class="text-purple-600">s</span> = <span class="text-amber-600">"${escapeHtml(input)}"</span></p>
+          <p class="code-font text-sm"><span class="text-green-600">ds</span> = s.<span class="text-red-500">split</span>()</p>
+          <p class="code-font text-sm"><span class="text-blue-600">print</span>(<span class="text-green-600">len</span>(ds))&nbsp;&nbsp;&nbsp;<span class="text-gray-400"># → ${parts.length}</span></p>
+          <p class="code-font text-sm"><span class="text-blue-600">print</span>(ds[0])&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-gray-400"># → ${escapeHtml(parts[0])}</span></p>
+          <p class="code-font text-sm"><span class="text-blue-600">print</span>(ds[-1])&nbsp;&nbsp;&nbsp;<span class="text-gray-400"># → ${escapeHtml(parts[parts.length-1])}</span></p>
+        </div>
+      </div>
+    `;
+  }
+
+  function processCard(icon, code, title, color, content) {
+    return `<div class="p-3 rounded-xl bg-${color}-50 border border-${color}-200">
+      <div class="flex items-center gap-2 mb-2">
+        <span>${icon}</span>
+        <span class="code-font text-xs bg-${color}-100 text-${color}-700 px-2 py-0.5 rounded font-bold">${code}</span>
+        <span class="text-xs font-bold text-gray-500">${title}</span>
+      </div>
+      <div class="text-sm font-semibold">${content}</div>
+    </div>`;
+  }
+
+  function listDisplay(arr) {
+    return arr.map((p,i) => `<span class="word-chip chip-colors-${i%6} text-xs pop-in" style="animation-delay:${i*0.08}s">"${escapeHtml(p)}"</span>`).join(' ');
+  }
+
+  // ============ JOIN VISUALIZATION ============
+  let currentJoinSep = ' ';
+
+  function setJoinSep(sep) {
+    currentJoinSep = sep;
+    document.querySelectorAll('.join-sep-btn').forEach(btn => {
+      btn.classList.remove('border-blue-500', 'bg-blue-100', 'ring-2', 'ring-blue-200');
+      btn.classList.add('border-gray-300', 'bg-gray-50');
+    });
+    // Highlight if matching button
+    document.querySelectorAll('.join-sep-btn').forEach(btn => {
+      const btnSep = btn.onclick.toString().match(/setJoinSep\('(.*)'\)/);
+      if (btnSep && btnSep[1] === sep) {
+        btn.classList.remove('border-gray-300', 'bg-gray-50');
+        btn.classList.add('border-blue-500', 'bg-blue-100', 'ring-2', 'ring-blue-200');
+      }
+    });
+  }
+
+  function runJoin() {
+    const input = document.getElementById('join-input').value;
+    if (!input.trim()) return;
+
+    const parts = input.split(' ').filter(p => p);
+    const sep = currentJoinSep;
+    const result = parts.join(sep);
+    const viz = document.getElementById('join-viz');
+
+    const sepDisplay = sep === ' ' ? '␣' : escapeHtml(sep);
+    const sepCode = sep === ' ' ? '" "' : `"${escapeHtml(sep)}"`;
+
+    let joinAnimHtml = '';
+    parts.forEach((p, i) => {
+      joinAnimHtml += `<span class="word-chip chip-colors-${i%6} pop-in" style="animation-delay:${i*0.15}s">"${escapeHtml(p)}"</span>`;
+      if (i < parts.length - 1) {
+        joinAnimHtml += `<span class="pop-in inline-flex items-center mx-1" style="animation-delay:${i*0.15 + 0.08}s">
+          <span class="glue-anim text-xl">🧴</span>
+          <span class="bg-red-100 text-red-700 px-2 py-1 rounded-lg font-bold border border-red-300 text-sm">${sepDisplay}</span>
+        </span>`;
+      }
+    });
+
+    // Build result with highlighted separators
+    let resultCharHtml = '';
+    parts.forEach((p, i) => {
+      for (let c of p) {
+        resultCharHtml += `<span class="highlight-char chip-colors-${i%6}">${escapeHtml(c)}</span>`;
+      }
+      if (i < parts.length - 1) {
+        for (let c of sep) {
+          resultCharHtml += `<span class="highlight-char bg-red-200 text-red-700 font-bold border-2 border-red-400">${c === ' ' ? '␣' : escapeHtml(c)}</span>`;
+        }
+      }
+    });
+
+    viz.innerHTML = `
+      <div class="space-y-4">
+        <div>
+          <div class="text-sm font-bold text-gray-500 mb-2">📋 Danh sách ban đầu:</div>
+          <div class="result-box">
+            <span class="list-bracket">[</span>
+            <div class="flex flex-wrap items-center gap-2 py-1">
+              ${parts.map((p,i) => chipHtml(p,i)).join(commaHtml())}
+            </div>
+            <span class="list-bracket">]</span>
+          </div>
+        </div>
+
+        <div class="arrow-flow">
+          <span class="text-2xl glue-anim">🧴</span>
+          <i data-lucide="arrow-down" style="width:20px;height:20px;"></i>
+          <span class="code-font text-sm font-bold bg-blue-100 text-blue-700 px-3 py-1 rounded-lg">
+            <span class="text-red-500">${sepCode}</span>.<span class="text-blue-600 font-bold">join</span>(ds)
+          </span>
+        </div>
+
+        <div>
+          <div class="text-sm font-bold text-gray-500 mb-2">🧩 Quá trình nối:</div>
+          <div class="flex flex-wrap items-center gap-1 p-3 bg-blue-50 rounded-xl border border-blue-200">
+            ${joinAnimHtml}
+          </div>
+        </div>
+
+        <div class="arrow-flow">
+          <i data-lucide="arrow-down" style="width:20px;height:20px;"></i>
+        </div>
+
+        <div>
+          <div class="text-sm font-bold text-gray-500 mb-2">✅ Kết quả (xâu mới):</div>
+          <div class="joined-result flex flex-wrap items-center gap-0.5 code-font text-lg">
+            <span class="text-amber-700 font-extrabold text-2xl mr-1">"</span>
+            ${resultCharHtml}
+            <span class="text-amber-700 font-extrabold text-2xl ml-1">"</span>
+          </div>
+          <p class="mt-2 code-font text-sm text-gray-600">→ <strong>"${escapeHtml(result)}"</strong></p>
+        </div>
+      </div>
+    `;
+    lucide.createIcons();
+  }
+
+  // ============ EXERCISES ============
+  const answers = { 1: 5, 2: 'Hà', 3: 'c b a', 5: 'both' };
+
+  function checkQuiz(num, answer, btn) {
+    const resultEl = document.getElementById('ex' + num + '-result');
+    const correct = answer === answers[num];
+    const parent = btn.closest('.exercise-card');
+    parent.querySelectorAll('.quiz-option').forEach(b => {
+      b.classList.remove('quiz-correct', 'quiz-wrong');
+      b.disabled = true;
+      b.style.opacity = '0.6';
+    });
+    btn.style.opacity = '1';
+    btn.classList.add(correct ? 'quiz-correct' : 'quiz-wrong');
+
+    if (correct) {
+      resultEl.className = 'p-3 rounded-xl bg-green-100 border border-green-300 text-green-800 font-semibold slide-down';
+      let explain = '';
+      if (num === 1) explain = '✅ Đúng rồi! <span class="code-font">"con mèo ngồi trên bàn".split()</span> → <span class="code-font">["con", "mèo", "ngồi", "trên", "bàn"]</span> = 5 từ!';
+      if (num === 2) explain = '✅ Chính xác! <span class="code-font">split()</span> cắt tại dấu cách, phần tử [0] là <strong>"Hà"</strong>, không phải "Hà Nội"!';
+      if (num === 3) explain = '✅ Tuyệt vời! <span class="code-font">["a","b","c"][::-1]</span> → <span class="code-font">["c","b","a"]</span> → join → <strong>"c b a"</strong>';
+      if (num === 5) explain = '✅ Xuất sắc! Cả hai cách đều cho cùng kết quả. <span class="code-font">split</span>+<span class="code-font">join</span> và <span class="code-font">replace</span> đều hoạt động!';
+      resultEl.innerHTML = explain;
+    } else {
+      resultEl.className = 'p-3 rounded-xl bg-red-100 border border-red-300 text-red-800 font-semibold slide-down';
+      resultEl.innerHTML = '❌ Chưa đúng, thử lại nhé! 💪';
+      setTimeout(() => {
+        parent.querySelectorAll('.quiz-option').forEach(b => { b.disabled = false; b.style.opacity = '1'; b.classList.remove('quiz-correct', 'quiz-wrong'); });
+        resultEl.className = 'hidden';
+      }, 1500);
+    }
+  }
+
+  function runEx4() {
+    const input = document.getElementById('ex4-input').value;
+    if (!input.trim()) return;
+    const parts = input.split(' ').filter(p => p);
+    const capitalized = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1));
+    const result = capitalized.join(' ');
+    const viz = document.getElementById('ex4-viz');
+
+    viz.innerHTML = `
+      <div class="space-y-3 slide-down">
+        <div class="mini-step border-amber-200 bg-amber-50">
+          <span>1️⃣</span>
+          <div><span class="code-font text-xs">split()</span> → ${parts.map((p,i) => `<span class="word-chip chip-colors-${i%6} text-xs">"${escapeHtml(p)}"</span>`).join(' ')}</div>
+        </div>
+        <div class="mini-step border-green-200 bg-green-50">
+          <span>2️⃣</span>
+          <div><span class="code-font text-xs">capitalize()</span> → ${capitalized.map((p,i) => `<span class="word-chip chip-colors-${i%6} text-xs"><strong class="text-lg">${escapeHtml(p[0])}</strong>${escapeHtml(p.slice(1))}</span>`).join(' ')}</div>
+        </div>
+        <div class="mini-step border-blue-200 bg-blue-50">
+          <span>3️⃣</span>
+          <div><span class="code-font text-xs">join()</span> → <span class="joined-result text-sm py-1 px-3">"${escapeHtml(result)}"</span></div>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl border">
+          <p class="code-font text-xs text-gray-600">s = "${escapeHtml(input)}"</p>
+          <p class="code-font text-xs text-gray-600">ds = s.split()</p>
+          <p class="code-font text-xs text-gray-600">ds = [t.capitalize() for t in ds]</p>
+          <p class="code-font text-xs text-gray-600">kq = " ".join(ds)</p>
+          <p class="code-font text-xs font-bold text-purple-600">print(kq)  # → "${escapeHtml(result)}"</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function showEx5Demo() {
+    const demo = document.getElementById('ex5-demo');
+    demo.classList.remove('hidden');
+    const s = "2024-01-15";
+    const parts = s.split('-');
+    const result = parts.join('/');
+
+    demo.innerHTML = `
+      <div class="space-y-3 slide-down p-4 bg-white rounded-xl border border-pink-200">
+        <h4 class="font-bold text-pink-700">Cách 1: split + join</h4>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="string-box text-sm py-1 px-3">"2024-01-15"</span>
+          <span>→ <span class="code-font text-xs text-red-500">.split("-")</span> →</span>
+          ${parts.map((p,i) => `<span class="word-chip chip-colors-${i%6} text-xs">"${p}"</span>`).join('<span class="comma-sep text-sm">,</span>')}
+          <span>→ <span class="code-font text-xs text-blue-500">"/".join()</span> →</span>
+          <span class="joined-result text-sm py-1 px-3">"${result}"</span>
+        </div>
+        <div class="mt-2 p-3 bg-gray-50 rounded-xl">
+          <p class="code-font text-xs"><span class="text-purple-600">s</span> = "2024-01-15"</p>
+          <p class="code-font text-xs"><span class="text-green-600">ds</span> = s.<span class="text-red-500">split</span>("-")&nbsp;&nbsp;<span class="text-gray-400"># ["2024", "01", "15"]</span></p>
+          <p class="code-font text-xs"><span class="text-blue-600">kq</span> = <span class="text-red-500">"/"</span>.<span class="text-blue-500">join</span>(ds)&nbsp;&nbsp;<span class="text-gray-400"># "2024/01/15"</span></p>
+        </div>
+      </div>
+    `;
+  }
+
+  // ============ HELPERS ============
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function chipHtml(text, index) {
+    return `<span class="word-chip chip-colors-${index%6} pop-in" style="animation-delay:${index*0.08}s; position:relative;">
+      <span class="index-badge">[${index}]</span>
+      "${escapeHtml(text)}"
+    </span>`;
+  }
+
+  function commaHtml() {
+    return '<span class="comma-sep">,</span>';
+  }
+
+  // Run initial demo
+  setTimeout(() => {
+    runSplit();
+    setJoinSep(' ');
+  }, 300);
+
+  lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e08e97e501449f3',t:'MTc3NDIyMTQ3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
